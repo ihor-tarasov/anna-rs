@@ -7,7 +7,7 @@ pub fn lex(reader: &mut Reader) -> Option<Token> {
         _ => TokenType::Unknown,
     };
 
-    let info = TokenInfo::new(reader.position(), 1);
+    let info = TokenInfo::new(reader.position() - 1, 1);
 
     Some(Token::new(ttype, info))
 }

@@ -3,7 +3,7 @@ use crate::{
     lexer::{Lexer, TokenInfo},
 };
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ParserErrorType {
     UnknownCharacter,
     UnexpectedToken,

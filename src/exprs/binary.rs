@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use crate::{
     lexer::TokenInfo,
-    opers::{BinaryOperator, OperatorError},
+    opers::{BinaryOperator, OperatorError}, State,
 };
 
 use super::{eval, expression::Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
@@ -32,9 +32,9 @@ impl<T: BinaryOperator> BinaryExpression<T> {
         Err(ExpressionError::new(etype, self.info.clone()))
     }
 
-    pub fn eval(&self) -> ExpressionResult {
-        let lhs = eval(&self.lhs)?;
-        let rhs = eval(&self.rhs)?;
+    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+        let lhs = eval(&self.lhs, state)?;
+        let rhs = eval(&self.rhs, state)?;
         match T::eval(lhs, rhs) {
             Ok(value) => Ok(value),
             Err(error) => self.map_error(error),

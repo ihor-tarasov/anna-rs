@@ -1,6 +1,6 @@
 use crate::{lexer::TokenInfo, types::Value};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum ExpressionErrorType {
     UnsupportedOperator,
     DividingByZero,
