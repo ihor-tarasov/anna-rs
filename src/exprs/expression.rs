@@ -11,7 +11,10 @@ use crate::opers::{
     unary::{UnaryMinusOperator, UnaryNotOperator},
 };
 
-use super::{literal::LiteralExpression, BinaryExpression, UnaryExpression};
+use super::{
+    literal::LiteralExpression, var::VarExpression, variable::VariableExpression, BinaryExpression,
+    UnaryExpression,
+};
 
 pub enum Expression {
     Literal(LiteralExpression),
@@ -32,6 +35,8 @@ pub enum Expression {
     BitwiseXor(Box<BinaryExpression<BitwiseOperator<XorBitwise>>>),
     BitwiseShl(Box<BinaryExpression<BitwiseOperator<ShlBitwise>>>),
     BitwiseShr(Box<BinaryExpression<BitwiseOperator<ShrBitwise>>>),
+    Variable(VariableExpression),
+    Var(Box<VarExpression>),
 }
 
 pub type ExpressionBox = Box<Expression>;

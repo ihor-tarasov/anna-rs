@@ -5,6 +5,8 @@ pub enum ExpressionErrorType {
     UnsupportedOperator,
     DividingByZero,
     ShiftNegative,
+    VariableNotExist,
+    VariableAlreadyExists,
 }
 
 pub struct ExpressionError {
@@ -27,3 +29,7 @@ impl ExpressionError {
 }
 
 pub type ExpressionResult = Result<Value, ExpressionError>;
+
+pub fn variable_not_exist(info: TokenInfo) -> ExpressionResult {
+    Err(ExpressionError::new(ExpressionErrorType::VariableNotExist, info))
+}

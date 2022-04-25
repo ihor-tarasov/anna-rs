@@ -7,6 +7,7 @@ mod lexer;
 mod number;
 mod reader;
 mod single;
+mod identifier;
 
 pub use lexer::Lexer;
 pub use token::Token;

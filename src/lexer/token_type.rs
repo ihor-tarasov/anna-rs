@@ -1,6 +1,7 @@
 pub enum TokenType {
     Integer(i64),
     Real(f64),
+    Identifier(String),
     Plus,             // +
     Minus,            // -
     Asterisk,         // *
@@ -17,5 +18,7 @@ pub enum TokenType {
     Circumflex,       // ^
     GreaterGreater,   // >>
     LessLess,         // <<
+    Equal,            // =
+    Var,
     Unknown,
 }

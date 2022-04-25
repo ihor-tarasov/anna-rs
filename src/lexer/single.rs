@@ -12,6 +12,7 @@ pub fn lex(c: u8) -> TokenType {
         b'&' => TokenType::Ampersand,
         b'|' => TokenType::VerticalBar,
         b'^' => TokenType::Circumflex,
+        b'=' => TokenType::Equal,
         _ => TokenType::Unknown,
     }
 }

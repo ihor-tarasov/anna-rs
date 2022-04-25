@@ -1,10 +1,17 @@
-use super::{double, number, reader::Reader, single, Token, TokenInfo};
+use super::{double, identifier, number, reader::Reader, single, Token, TokenInfo};
 
 fn lex(reader: &mut Reader) -> Option<Token> {
     let mut c = reader.peek()?;
     while c == b' ' || c == b'\t' || c == b'\r' || c == b'\n' {
         reader.next()?;
         c = reader.peek()?;
+    }
+
+    if c.is_ascii_alphabetic() {
+        match identifier::lex(reader) {
+            Some(token) => return Some(token),
+            None => (),
+        }
     }
 
     if c.is_ascii_digit() {

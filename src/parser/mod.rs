@@ -54,10 +54,15 @@ mod primary;
 mod term;
 mod unary;
 mod bitwise;
+mod var;
+
+pub fn parse_expression(lexer: &mut Lexer) -> ParserResult {
+    equality::parse(lexer)
+}
 
 pub fn parse(lexer: &mut Lexer) -> ParserResult {
     let result = match lexer.peek() {
-        Some(_) => equality::parse(lexer)?,
+        Some(_) => parse_expression(lexer)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,

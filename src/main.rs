@@ -38,9 +38,13 @@ fn main() {
                     }
                 },
                 Err(error) => {
-                    if error.etype() == ParserErrorType::UnexpectedEndOfFile {
-                        print!("-| ");
-                        continue;
+                    match error.etype() {
+                        ParserErrorType::UnexpectedEndOfFile => {
+                            print!("-| ");
+                            continue;
+                        },
+                        ParserErrorType::Empty => break,
+                        _ => (),
                     }
                     print_info(code.as_bytes(), error.info());
                     println!("Parser error: {:?}", error.etype());
