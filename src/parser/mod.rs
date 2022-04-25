@@ -52,6 +52,7 @@ mod equality;
 mod factor;
 mod primary;
 mod term;
+mod unary;
 
 pub fn parse(lexer: &mut Lexer) -> ParserResult {
     let result = match lexer.peek() {

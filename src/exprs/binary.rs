@@ -14,6 +14,14 @@ pub struct BinaryExpression<T: BinaryOperator> {
     phantom: PhantomData<T>,
 }
 
+pub fn map_error(info: TokenInfo, error: OperatorError) -> ExpressionResult {
+    let etype = match error {
+        OperatorError::Unsupported => ExpressionErrorType::UnsupportedOperator,
+        OperatorError::DividingByZero => ExpressionErrorType::DividingByZero,
+    };
+    Err(ExpressionError::new(etype, info))
+}
+
 impl<T: BinaryOperator> BinaryExpression<T> {
     pub fn new(lhs: Expression, rhs: Expression, info: TokenInfo) -> Self {
         Self {
@@ -24,20 +32,12 @@ impl<T: BinaryOperator> BinaryExpression<T> {
         }
     }
 
-    fn map_error(&self, error: OperatorError) -> ExpressionResult {
-        let etype = match error {
-            OperatorError::Unsupported => ExpressionErrorType::UnsupportedOperator,
-            OperatorError::DividingByZero => ExpressionErrorType::DividingByZero,
-        };
-        Err(ExpressionError::new(etype, self.info.clone()))
-    }
-
     pub fn eval(&self, state: &mut State) -> ExpressionResult {
         let lhs = eval(&self.lhs, state)?;
         let rhs = eval(&self.rhs, state)?;
         match T::eval(lhs, rhs) {
             Ok(value) => Ok(value),
-            Err(error) => self.map_error(error),
+            Err(error) => map_error(self.info.clone(), error),
         }
     }
 }

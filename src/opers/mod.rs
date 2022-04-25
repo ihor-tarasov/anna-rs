@@ -12,5 +12,10 @@ pub trait BinaryOperator {
     fn eval(lhs: Value, rhs: Value) -> OperatorResult;
 }
 
+pub trait UnaryOperator {
+    fn eval(value: Value) -> OperatorResult;
+}
+
 pub mod arithmetic;
 pub mod comparison;
+pub mod unary;

@@ -11,5 +11,6 @@ pub enum TokenType {
     GreaterEqual,     // >=
     Less,             // <
     Greater,          // >
+    Exclamation,      // !
     Unknown,
 }

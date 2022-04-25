@@ -5,14 +5,16 @@ pub use result::ExpressionErrorType;
 pub use result::ExpressionResult;
 
 mod binary;
+mod eval;
 mod expression;
 mod literal;
-mod eval;
+mod unary;
 
 pub use expression::Expression;
 pub use expression::ExpressionBox;
 
-pub use literal::LiteralExpression;
 pub use binary::BinaryExpression;
+pub use literal::LiteralExpression;
+pub use unary::UnaryExpression;
 
 pub use eval::eval;

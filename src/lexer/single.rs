@@ -8,6 +8,7 @@ pub fn lex(c: u8) -> TokenType {
         b'/' => TokenType::Slash,
         b'<' => TokenType::Less,
         b'>' => TokenType::Greater,
+        b'!' => TokenType::Exclamation,
         _ => TokenType::Unknown,
     }
 }

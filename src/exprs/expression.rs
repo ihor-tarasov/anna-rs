@@ -6,10 +6,10 @@ use crate::opers::{
     comparison::{
         ComparisonOperator, EqualComparison, GreaterComparison, GreaterEqualComparison,
         LessComparison, LessEqualComparison,
-    },
+    }, unary::{UnaryNotOperator, UnaryMinusOperator},
 };
 
-use super::{literal::LiteralExpression, BinaryExpression};
+use super::{literal::LiteralExpression, BinaryExpression, UnaryExpression};
 
 pub enum Expression {
     Literal(LiteralExpression),
@@ -23,6 +23,8 @@ pub enum Expression {
     Greater(Box<BinaryExpression<ComparisonOperator<GreaterComparison>>>),
     LessEqual(Box<BinaryExpression<ComparisonOperator<LessEqualComparison>>>),
     GreaterEqual(Box<BinaryExpression<ComparisonOperator<GreaterEqualComparison>>>),
+    UnaryNot(Box<UnaryExpression<UnaryNotOperator>>),
+    UnaryMinus(Box<UnaryExpression<UnaryMinusOperator>>),
 }
 
 pub type ExpressionBox = Box<Expression>;

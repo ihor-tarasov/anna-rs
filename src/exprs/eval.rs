@@ -15,5 +15,7 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::Greater(greater) => greater.eval(state),
         Expression::LessEqual(less_equal) => less_equal.eval(state),
         Expression::GreaterEqual(greater_equal) => greater_equal.eval(state),
+        Expression::UnaryNot(unary_not) => unary_not.eval(state),
+        Expression::UnaryMinus(unary_minus) => unary_minus.eval(state),        
     }
 }
