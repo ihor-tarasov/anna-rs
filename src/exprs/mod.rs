@@ -11,6 +11,7 @@ mod literal;
 mod unary;
 mod variable;
 mod var;
+mod assign;
 
 pub use expression::Expression;
 pub use expression::ExpressionBox;
@@ -20,5 +21,6 @@ pub use literal::LiteralExpression;
 pub use unary::UnaryExpression;
 pub use variable::VariableExpression;
 pub use var::VarExpression;
+pub use assign::AssignExpression;
 
 pub use eval::eval;

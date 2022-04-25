@@ -13,7 +13,7 @@ use crate::opers::{
 
 use super::{
     literal::LiteralExpression, var::VarExpression, variable::VariableExpression, BinaryExpression,
-    UnaryExpression,
+    UnaryExpression, assign::AssignExpression,
 };
 
 pub enum Expression {
@@ -37,6 +37,7 @@ pub enum Expression {
     BitwiseShr(Box<BinaryExpression<BitwiseOperator<ShrBitwise>>>),
     Variable(VariableExpression),
     Var(Box<VarExpression>),
+    Assign(Box<AssignExpression>),
 }
 
 pub type ExpressionBox = Box<Expression>;

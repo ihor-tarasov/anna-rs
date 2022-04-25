@@ -24,5 +24,7 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::BitwiseShr(bitwise_shr) => bitwise_shr.eval(state),
         Expression::Variable(variable) => variable.eval(state),
         Expression::Var(var) => var.eval(state),
+        Expression::Assign(assign) => assign.eval(state),
+        
     }
 }

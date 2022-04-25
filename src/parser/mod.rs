@@ -55,6 +55,7 @@ mod term;
 mod unary;
 mod bitwise;
 mod var;
+mod identifier;
 
 pub fn parse_expression(lexer: &mut Lexer) -> ParserResult {
     equality::parse(lexer)
