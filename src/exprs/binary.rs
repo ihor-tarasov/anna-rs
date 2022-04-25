@@ -18,6 +18,8 @@ pub fn map_error(info: TokenInfo, error: OperatorError) -> ExpressionResult {
     let etype = match error {
         OperatorError::Unsupported => ExpressionErrorType::UnsupportedOperator,
         OperatorError::DividingByZero => ExpressionErrorType::DividingByZero,
+        OperatorError::ShiftNegative => ExpressionErrorType::ShiftNegative,
+        
     };
     Err(ExpressionError::new(etype, info))
 }

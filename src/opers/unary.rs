@@ -20,7 +20,7 @@ impl UnaryOperator for UnaryNotOperator {
     fn eval(value: Value) -> OperatorResult {
         match value {
             Value::Boolean(value) => Ok(Value::Boolean(!value)),
-            Value::Integer(value) => Ok(Value::Integer(!value)),
+            Value::Integer(value) => Ok(Value::Integer(value.wrapping_neg())),
             _ => Err(OperatorError::Unsupported),
         }
     }

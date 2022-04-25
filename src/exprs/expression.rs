@@ -3,10 +3,12 @@ use crate::opers::{
         AddictArithmetic, ArithmeticOperator, DivideArithmetic, MultiplyArithmetic,
         SubtractArithmetic,
     },
+    bitwise::{AndBitwise, BitwiseOperator, OrBitwise, ShlBitwise, ShrBitwise, XorBitwise},
     comparison::{
         ComparisonOperator, EqualComparison, GreaterComparison, GreaterEqualComparison,
         LessComparison, LessEqualComparison,
-    }, unary::{UnaryNotOperator, UnaryMinusOperator},
+    },
+    unary::{UnaryMinusOperator, UnaryNotOperator},
 };
 
 use super::{literal::LiteralExpression, BinaryExpression, UnaryExpression};
@@ -25,6 +27,11 @@ pub enum Expression {
     GreaterEqual(Box<BinaryExpression<ComparisonOperator<GreaterEqualComparison>>>),
     UnaryNot(Box<UnaryExpression<UnaryNotOperator>>),
     UnaryMinus(Box<UnaryExpression<UnaryMinusOperator>>),
+    BitwiseAnd(Box<BinaryExpression<BitwiseOperator<AndBitwise>>>),
+    BitwiseOr(Box<BinaryExpression<BitwiseOperator<OrBitwise>>>),
+    BitwiseXor(Box<BinaryExpression<BitwiseOperator<XorBitwise>>>),
+    BitwiseShl(Box<BinaryExpression<BitwiseOperator<ShlBitwise>>>),
+    BitwiseShr(Box<BinaryExpression<BitwiseOperator<ShrBitwise>>>),
 }
 
 pub type ExpressionBox = Box<Expression>;

@@ -1,6 +1,12 @@
 use std::io::Write;
 
-use anna_rs::{exprs, lexer::Lexer, parser::{self, ParserErrorType}, State, debug::print_info};
+use anna_rs::{
+    debug::print_info,
+    exprs,
+    lexer::Lexer,
+    parser::{self, ParserErrorType},
+    State,
+};
 
 fn main() {
     let mut state = State::new();
@@ -29,7 +35,7 @@ fn main() {
                     Err(error) => {
                         print_info(code.as_bytes(), error.info());
                         println!("Runtime error: {:?}", error.etype());
-                    },
+                    }
                 },
                 Err(error) => {
                     if error.etype() == ParserErrorType::UnexpectedEndOfFile {
@@ -38,7 +44,7 @@ fn main() {
                     }
                     print_info(code.as_bytes(), error.info());
                     println!("Parser error: {:?}", error.etype());
-                },
+                }
             }
 
             break;

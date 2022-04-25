@@ -12,5 +12,10 @@ pub enum TokenType {
     Less,             // <
     Greater,          // >
     Exclamation,      // !
+    Ampersand,        // &
+    VerticalBar,      // |
+    Circumflex,       // ^
+    GreaterGreater,   // >>
+    LessLess,         // <<
     Unknown,
 }

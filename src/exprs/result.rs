@@ -4,6 +4,7 @@ use crate::{lexer::TokenInfo, types::Value};
 pub enum ExpressionErrorType {
     UnsupportedOperator,
     DividingByZero,
+    ShiftNegative,
 }
 
 pub struct ExpressionError {

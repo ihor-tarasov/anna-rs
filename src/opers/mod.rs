@@ -4,6 +4,7 @@ use crate::types::Value;
 pub enum OperatorError {
     Unsupported,
     DividingByZero,
+    ShiftNegative,
 }
 
 pub type OperatorResult = Result<Value, OperatorError>;
@@ -17,5 +18,6 @@ pub trait UnaryOperator {
 }
 
 pub mod arithmetic;
+pub mod bitwise;
 pub mod comparison;
 pub mod unary;

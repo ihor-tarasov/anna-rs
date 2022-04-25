@@ -9,6 +9,9 @@ pub fn lex(c: u8) -> TokenType {
         b'<' => TokenType::Less,
         b'>' => TokenType::Greater,
         b'!' => TokenType::Exclamation,
+        b'&' => TokenType::Ampersand,
+        b'|' => TokenType::VerticalBar,
+        b'^' => TokenType::Circumflex,
         _ => TokenType::Unknown,
     }
 }

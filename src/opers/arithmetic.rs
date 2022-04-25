@@ -56,7 +56,7 @@ impl ArithmeticType for DivideArithmetic {
         if rhs == 0 {
             Err(OperatorError::DividingByZero)
         } else {
-            Ok(Value::Integer(lhs.wrapping_add(rhs)))
+            Ok(Value::Integer(lhs.wrapping_div(rhs)))
         }
     }
 }
