@@ -14,7 +14,13 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
                 lexer.next();
                 let rhs = factor::parse(lexer)?;
                 lhs = Expression::Addict(Box::new(BinaryExpression::new(lhs, rhs, info)));
-            }
+            },
+            TokenType::Minus => {
+                let info = token.info();
+                lexer.next();
+                let rhs = factor::parse(lexer)?;
+                lhs = Expression::Subtract(Box::new(BinaryExpression::new(lhs, rhs, info)));
+            },
             _ => break,
         }
     }

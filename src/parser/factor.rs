@@ -14,7 +14,13 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
                 lexer.next();
                 let rhs = primary::parse(lexer)?;
                 lhs = Expression::Multiply(Box::new(BinaryExpression::new(lhs, rhs, info)));
-            }
+            },
+            TokenType::Slash => {
+                let info = token.info();
+                lexer.next();
+                let rhs = primary::parse(lexer)?;
+                lhs = Expression::Divide(Box::new(BinaryExpression::new(lhs, rhs, info)));
+            },
             _ => break,
         }
     }
