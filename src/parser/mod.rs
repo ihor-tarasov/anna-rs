@@ -47,9 +47,15 @@ fn unknown(info: TokenInfo) -> ParserResult {
     Err(ParserError::new(ParserErrorType::UnknownCharacter, info))
 }
 
+mod comparison;
+mod equality;
+mod factor;
+mod primary;
+mod term;
+
 pub fn parse(lexer: &mut Lexer) -> ParserResult {
     let result = match lexer.peek() {
-        Some(_) => term::parse(lexer)?,
+        Some(_) => equality::parse(lexer)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,
@@ -63,7 +69,3 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
         Ok(result)
     }
 }
-
-mod factor;
-mod primary;
-mod term;

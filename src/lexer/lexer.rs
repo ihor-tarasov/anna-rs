@@ -1,9 +1,8 @@
-use super::{reader::Reader, Token, single, number};
+use super::{double, number, reader::Reader, single, Token, TokenInfo};
 
 fn lex(reader: &mut Reader) -> Option<Token> {
     let mut c = reader.peek()?;
-    while c == b' ' || c == b'\t' ||
-        c == b'\r' || c == b'\n' {
+    while c == b' ' || c == b'\t' || c == b'\r' || c == b'\n' {
         reader.next()?;
         c = reader.peek()?;
     }
@@ -15,7 +14,19 @@ fn lex(reader: &mut Reader) -> Option<Token> {
         }
     }
 
-    single::lex(reader)
+    c = reader.next()?;
+
+    if let Some(c2) = reader.peek() {
+        if let Some(ttype) = double::lex(c, c2) {
+            reader.next()?;
+            return Some(Token::new(ttype, TokenInfo::new(reader.position() - 2, 2)));
+        }
+    }
+
+    Some(Token::new(
+        single::lex(c),
+        TokenInfo::new(reader.position() - 1, 1),
+    ))
 }
 
 pub struct Lexer<'a> {
@@ -24,7 +35,7 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(data: &'a[u8]) -> Self {
+    pub fn new(data: &'a [u8]) -> Self {
         let mut reader = Reader::new(data);
         Self {
             token: lex(&mut reader),

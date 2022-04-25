@@ -13,3 +13,4 @@ pub trait BinaryOperator {
 }
 
 pub mod arithmetic;
+pub mod comparison;

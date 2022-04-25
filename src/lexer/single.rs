@@ -1,15 +1,13 @@
-use super::{reader::Reader, Token, TokenType, TokenInfo};
+use super::TokenType;
 
-pub fn lex(reader: &mut Reader) -> Option<Token> {
-    let ttype = match reader.next()? {
+pub fn lex(c: u8) -> TokenType {
+    match c {
         b'+' => TokenType::Plus,
         b'-' => TokenType::Minus,
         b'*' => TokenType::Asterisk,
         b'/' => TokenType::Slash,
+        b'<' => TokenType::Less,
+        b'>' => TokenType::Greater,
         _ => TokenType::Unknown,
-    };
-
-    let info = TokenInfo::new(reader.position() - 1, 1);
-
-    Some(Token::new(ttype, info))
+    }
 }
