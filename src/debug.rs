@@ -29,6 +29,7 @@ pub fn print_value(value: Value) {
         Value::Boolean(value) => print!("{}", value),
         Value::Integer(value) => print!("{}", value),
         Value::Real(value) => print!("{}", value),
+        Value::ObjectId(value) => print!("#[{}]", value),
     }
 }
 
