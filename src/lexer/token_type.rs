@@ -25,5 +25,8 @@ pub enum TokenType {
     LeftParenthesis,    // (
     RightParenthesis,   // )
     Var,
+    Break,
+    Continue,
+    Return,
     Unknown,
 }

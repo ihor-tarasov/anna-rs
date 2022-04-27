@@ -1,4 +1,7 @@
-use crate::{StackFrame, types::{Storage, Value}, State};
+use crate::{
+    types::{Storage, Value},
+    StackFrame, State,
+};
 
 pub type NativeFunctionCallback = dyn Fn(&mut State, Vec<Value>) -> Value;
 pub type NativeFunctionCallbackBox = Box<NativeFunctionCallback>;

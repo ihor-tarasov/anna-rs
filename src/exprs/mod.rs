@@ -15,6 +15,7 @@ mod assign;
 mod array;
 mod index;
 mod call;
+mod caching;
 
 pub use expression::Expression;
 
@@ -27,5 +28,6 @@ pub use assign::AssignExpression;
 pub use array::ArrayExpression;
 pub use index::IndexExpression;
 pub use call::CallExpression;
+pub use caching::CachingExpression;
 
 pub use eval::eval;

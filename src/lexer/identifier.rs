@@ -18,6 +18,9 @@ pub fn lex(reader: &mut Reader) -> Option<Token> {
 
     let ttype = match accumulator.as_str() {
         "var" => TokenType::Var,
+        "break" => TokenType::Break,
+        "continue" => TokenType::Continue,
+        "return" => TokenType::Return,
         _ => TokenType::Identifier(accumulator),
     };
 

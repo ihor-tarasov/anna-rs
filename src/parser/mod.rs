@@ -59,6 +59,7 @@ mod identifier;
 mod array;
 mod index;
 mod call;
+mod caching;
 
 pub fn parse_expression(lexer: &mut Lexer) -> ParserResult {
     equality::parse(lexer)

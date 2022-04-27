@@ -57,7 +57,7 @@ impl IndexExpression {
                     index_out_of_bounds(self.info.clone())
                 }
             },
-            //_ => expect_indexable_object(self.info.clone()),
+            _ => expect_indexable_object(self.info.clone()),
         }
     }
 }

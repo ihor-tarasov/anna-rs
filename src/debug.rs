@@ -26,11 +26,16 @@ pub fn print_info(code: &[u8], info: TokenInfo) {
 
 pub fn print_value(value: Value) {
     match value {
+        Value::Void => print!("#void"),
+        Value::Break => print!("#break"),
+        Value::Continue => print!("#continue"),
+        Value::Return => print!("#return"),
         Value::Boolean(value) => print!("{}", value),
         Value::Integer(value) => print!("{}", value),
         Value::Real(value) => print!("{}", value),
         Value::ObjectId(value) => print!("#[{}]", value),
         Value::NativeFunctionId(value) => print!("#NFN[{}]", value),
+        Value::FunctionId(value) => print!("#FN[{}]", value),
     }
 }
 
