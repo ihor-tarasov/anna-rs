@@ -2,23 +2,26 @@ pub enum TokenType {
     Integer(i64),
     Real(f64),
     Identifier(String),
-    Plus,             // +
-    Minus,            // -
-    Asterisk,         // *
-    Slash,            // /
-    EqualEqual,       // ==
-    ExclamationEqual, // !=
-    LessEqual,        // <=
-    GreaterEqual,     // >=
-    Less,             // <
-    Greater,          // >
-    Exclamation,      // !
-    Ampersand,        // &
-    VerticalBar,      // |
-    Circumflex,       // ^
-    GreaterGreater,   // >>
-    LessLess,         // <<
-    Equal,            // =
+    Plus,               // +
+    Minus,              // -
+    Asterisk,           // *
+    Slash,              // /
+    EqualEqual,         // ==
+    ExclamationEqual,   // !=
+    LessEqual,          // <=
+    GreaterEqual,       // >=
+    Less,               // <
+    Greater,            // >
+    Exclamation,        // !
+    Ampersand,          // &
+    VerticalBar,        // |
+    Circumflex,         // ^
+    GreaterGreater,     // >>
+    LessLess,           // <<
+    Equal,              // =
+    LeftSquareBracket,  // [
+    RightSquareBracket, // ]
+    Comma,              // ,
     Var,
     Unknown,
 }

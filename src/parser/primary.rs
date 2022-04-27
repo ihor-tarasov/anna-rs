@@ -4,7 +4,7 @@ use crate::{
     types::Value,
 };
 
-use super::{unexpected_eof, ParserResult, unknown, unexpected, var, identifier};
+use super::{array, identifier, unexpected, unexpected_eof, unknown, var, ParserResult};
 
 pub fn parse(lexer: &mut Lexer) -> ParserResult {
     let token = match lexer.next() {
@@ -17,6 +17,7 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
         TokenType::Real(value) => Ok(LiteralExpression::new(Value::Real(value))),
         TokenType::Identifier(name) => identifier::parse(lexer, name, info),
         TokenType::Var => var::parse(lexer),
+        TokenType::LeftSquareBracket => array::parse(lexer),
         TokenType::Unknown => unknown(info),
         _ => unexpected(info),
     }

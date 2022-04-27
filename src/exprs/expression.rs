@@ -12,8 +12,8 @@ use crate::opers::{
 };
 
 use super::{
-    literal::LiteralExpression, var::VarExpression, variable::VariableExpression, BinaryExpression,
-    UnaryExpression, assign::AssignExpression,
+    assign::AssignExpression, literal::LiteralExpression, var::VarExpression,
+    variable::VariableExpression, ArrayExpression, BinaryExpression, UnaryExpression,
 };
 
 pub enum Expression {
@@ -38,6 +38,7 @@ pub enum Expression {
     Variable(VariableExpression),
     Var(Box<VarExpression>),
     Assign(Box<AssignExpression>),
+    Array(ArrayExpression),
 }
 
 pub type ExpressionBox = Box<Expression>;

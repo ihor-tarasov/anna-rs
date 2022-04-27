@@ -13,6 +13,9 @@ pub fn lex(c: u8) -> TokenType {
         b'|' => TokenType::VerticalBar,
         b'^' => TokenType::Circumflex,
         b'=' => TokenType::Equal,
+        b'[' => TokenType::LeftSquareBracket,
+        b']' => TokenType::RightSquareBracket,
+        b',' => TokenType::Comma,
         _ => TokenType::Unknown,
     }
 }
