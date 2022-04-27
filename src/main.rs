@@ -1,27 +1,37 @@
 use std::io::Write;
 
 use anna_rs::{
-    debug,
-    exprs,
+    debug, exprs,
     lexer::Lexer,
     parser::{self, ParserErrorType},
-    State, types::Value,
+    types::Value,
+    State,
 };
+
+fn aria_print(args: Vec<Value>) {
+    let mut it = args.iter();
+
+    if let Some(value) = it.next() {
+        debug::print_value(value.clone());
+        while let Some(value) = it.next() {
+            print!(", ");
+            debug::print_value(value.clone());
+        }
+    }
+}
 
 fn main() {
     let mut state = State::new();
 
     state.native("print".to_string(), |_state, args| {
-        let mut it = args.iter();
+        aria_print(args);
+        Value::Void
+    });
 
-        if let Some(value) = it.next() {
-            debug::print_value(value.clone());
-            while let Some(value) = it.next() {
-                print!(", ");
-                debug::print_value(value.clone());
-            }
-        }
-        Value::Boolean(true)
+    state.native("println".to_string(), |_state, args| {
+        aria_print(args);
+        println!();
+        Value::Void
     });
 
     loop {
@@ -40,7 +50,10 @@ fn main() {
 
             match parser::parse(&mut lexer) {
                 Ok(expression) => match exprs::eval(&expression, &mut state) {
-                    Ok(value) => debug::println_value(value),
+                    Ok(value) => match value {
+                        Value::Void => (),
+                        _ => debug::println_value(value),
+                    },
                     Err(error) => {
                         debug::print_info(code.as_bytes(), error.info());
                         println!("Runtime error: {:?}", error.etype());
@@ -51,7 +64,7 @@ fn main() {
                         ParserErrorType::UnexpectedEndOfFile => {
                             print!("-| ");
                             continue;
-                        },
+                        }
                         ParserErrorType::Empty => break,
                         _ => (),
                     }
