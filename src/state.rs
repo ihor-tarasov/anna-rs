@@ -1,6 +1,6 @@
-use std::{rc::Rc, cell::RefCell};
+use std::{cell::RefCell, rc::Rc};
 
-use crate::{Stack, global_state::GlobalState};
+use crate::{global_state::GlobalState, types::Value, Stack};
 
 pub struct State {
     stack: Stack,
@@ -25,5 +25,13 @@ impl State {
 
     pub fn global(&self) -> Rc<RefCell<GlobalState>> {
         self.global.clone()
+    }
+
+    pub fn native<F>(&mut self, name: String, f: F) -> bool
+    where
+        F: Fn(&mut State, Vec<Value>) -> Value + 'static,
+    {
+        let value = Value::NativeFunctionId(self.global.borrow_mut().push_native(Box::new(f)));
+        self.global().borrow_mut().frame_mut().var(name, value)
     }
 }

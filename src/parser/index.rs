@@ -3,7 +3,7 @@ use crate::{
     lexer::{Lexer, TokenInfo, TokenType},
 };
 
-use super::{unexpected, ParserResult};
+use super::{unexpected, ParserResult, call};
 
 pub fn parse(lexer: &mut Lexer, from: Expression, info: TokenInfo) -> ParserResult {
     let index = super::parse_expression(lexer)?;
@@ -20,6 +20,10 @@ pub fn parse(lexer: &mut Lexer, from: Expression, info: TokenInfo) -> ParserResu
                 lexer.next();
                 return parse(lexer, IndexExpression::new(from, index, info.clone()), info);
             },
+            TokenType::LeftParenthesis => {
+                lexer.next();
+                return call::parse(lexer, IndexExpression::new(from, index, info.clone()), info);
+            }
             _ => (),
         }
     }

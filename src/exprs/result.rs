@@ -10,6 +10,7 @@ pub enum ExpressionErrorType {
     InvalidIndex,
     ExpectIndexableObject,
     IndexOutOfBounds,
+    NotCallableObject,
 }
 
 pub struct ExpressionError {

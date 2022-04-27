@@ -5,11 +5,24 @@ use anna_rs::{
     exprs,
     lexer::Lexer,
     parser::{self, ParserErrorType},
-    State,
+    State, types::Value,
 };
 
 fn main() {
     let mut state = State::new();
+
+    state.native("print".to_string(), |_state, args| {
+        let mut it = args.iter();
+
+        if let Some(value) = it.next() {
+            debug::print_value(value.clone());
+            while let Some(value) = it.next() {
+                print!(", ");
+                debug::print_value(value.clone());
+            }
+        }
+        Value::Boolean(true)
+    });
 
     loop {
         print!("-> ");

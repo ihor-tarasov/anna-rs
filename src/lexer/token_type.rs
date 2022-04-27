@@ -22,6 +22,8 @@ pub enum TokenType {
     LeftSquareBracket,  // [
     RightSquareBracket, // ]
     Comma,              // ,
+    LeftParenthesis,    // (
+    RightParenthesis,   // )
     Var,
     Unknown,
 }

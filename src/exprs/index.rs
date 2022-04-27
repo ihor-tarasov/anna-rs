@@ -49,15 +49,15 @@ impl IndexExpression {
                 } else {
                     index_out_of_bounds(self.info.clone())
                 }
-            }
+            },
             Object::Array(array) => {
                 if let Some(value) = array.get(index as usize) {
                     Ok(value.clone())
                 } else {
                     index_out_of_bounds(self.info.clone())
                 }
-            }
-            _ => expect_indexable_object(self.info.clone()),
+            },
+            //_ => expect_indexable_object(self.info.clone()),
         }
     }
 }

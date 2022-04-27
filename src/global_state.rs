@@ -1,8 +1,12 @@
-use crate::{StackFrame, types::Storage};
+use crate::{StackFrame, types::{Storage, Value}, State};
+
+pub type NativeFunctionCallback = dyn Fn(&mut State, Vec<Value>) -> Value;
+pub type NativeFunctionCallbackBox = Box<NativeFunctionCallback>;
 
 pub struct GlobalState {
     frame: StackFrame,
     storage: Storage,
+    natives: Vec<NativeFunctionCallbackBox>,
 }
 
 impl GlobalState {
@@ -12,6 +16,7 @@ impl GlobalState {
         Self {
             frame,
             storage: Storage::new(),
+            natives: Vec::new(),
         }
     }
 
@@ -29,5 +34,14 @@ impl GlobalState {
 
     pub fn storage_mut(&mut self) -> &mut Storage {
         &mut self.storage
+    }
+
+    pub fn push_native(&mut self, callback: NativeFunctionCallbackBox) -> usize {
+        self.natives.push(callback);
+        self.natives.len() - 1
+    }
+
+    pub fn native(&self, id: usize) -> &NativeFunctionCallback {
+        self.natives.get(id).expect("Native Function not exist")
     }
 }
