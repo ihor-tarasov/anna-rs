@@ -7,6 +7,9 @@ pub enum ExpressionErrorType {
     ShiftNegative,
     VariableNotExist,
     VariableAlreadyExists,
+    InvalidIndex,
+    ExpectIndexableObject,
+    IndexOutOfBounds,
 }
 
 pub struct ExpressionError {
@@ -32,4 +35,16 @@ pub type ExpressionResult = Result<Value, ExpressionError>;
 
 pub fn variable_not_exist(info: TokenInfo) -> ExpressionResult {
     Err(ExpressionError::new(ExpressionErrorType::VariableNotExist, info))
+}
+
+pub fn invalid_index(info: TokenInfo) -> ExpressionResult {
+    Err(ExpressionError::new(ExpressionErrorType::InvalidIndex, info))
+}
+
+pub fn expect_indexable_object(info: TokenInfo) -> ExpressionResult {
+    Err(ExpressionError::new(ExpressionErrorType::ExpectIndexableObject, info))
+}
+
+pub fn index_out_of_bounds(info: TokenInfo) -> ExpressionResult {
+    Err(ExpressionError::new(ExpressionErrorType::IndexOutOfBounds, info))
 }

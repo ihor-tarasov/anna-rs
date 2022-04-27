@@ -26,5 +26,6 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::Var(var) => var.eval(state),
         Expression::Assign(assign) => assign.eval(state),
         Expression::Array(array) => array.eval(state),
+        Expression::Index(index) => index.eval(state),
     }
 }
