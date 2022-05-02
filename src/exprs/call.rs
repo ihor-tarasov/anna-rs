@@ -1,4 +1,8 @@
-use crate::{lexer::TokenInfo, types::Value, State};
+use crate::{
+    lexer::TokenInfo,
+    types::{Object, Value},
+    State,
+};
 
 use super::{eval, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
 
@@ -31,6 +35,16 @@ impl CallExpression {
 
         match from {
             Value::NativeFunctionId(id) => Ok((state.global().borrow().native(id))(state, params)),
+            Value::ObjectId(id) => match state.global().borrow().storage().get(id) {
+                Object::Closure((id, closure)) => {
+                    state
+                        .global()
+                        .borrow()
+                        .function(*id)
+                        .call(state, params, closure.clone())
+                }
+                _ => not_callable_object(self.info.clone()),
+            },
             _ => not_callable_object(self.info.clone()),
         }
     }

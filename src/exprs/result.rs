@@ -12,6 +12,7 @@ pub enum ExpressionErrorType {
     IndexOutOfBounds,
     NotCallableObject,
     ExpectedBoolForConditions,
+    InvalidArgumentCount,
 }
 
 pub struct ExpressionError {

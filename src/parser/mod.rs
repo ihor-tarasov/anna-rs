@@ -1,6 +1,6 @@
 use crate::{
     exprs::Expression,
-    lexer::{Lexer, TokenInfo},
+    lexer::{Lexer, TokenInfo}, State,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -9,6 +9,7 @@ pub enum ParserErrorType {
     UnexpectedToken,
     UnexpectedEndOfFile,
     Empty,
+    ArgumentAlreadyExist,
 }
 
 pub struct ParserError {
@@ -63,14 +64,15 @@ mod caching;
 mod block;
 mod if_parser;
 mod while_parser;
+mod function;
 
-pub fn parse_expression(lexer: &mut Lexer) -> ParserResult {
-    equality::parse(lexer)
+pub fn parse_expression(lexer: &mut Lexer, state: &mut State) -> ParserResult {
+    equality::parse(lexer, state)
 }
 
-pub fn parse(lexer: &mut Lexer) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
     let result = match lexer.peek() {
-        Some(_) => parse_expression(lexer)?,
+        Some(_) => parse_expression(lexer, state)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,

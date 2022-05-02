@@ -35,7 +35,6 @@ pub fn print_value(value: Value) {
         Value::Real(value) => print!("{}", value),
         Value::ObjectId(value) => print!("#[{}]", value),
         Value::NativeFunctionId(value) => print!("#NFN[{}]", value),
-        Value::FunctionId(value) => print!("#FN[{}]", value),
     }
 }
 

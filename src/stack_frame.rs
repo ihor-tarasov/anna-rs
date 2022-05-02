@@ -15,6 +15,14 @@ impl StackFrame {
         }
     }
 
+    pub fn with_closure(closure: HashMap<String, Value>) -> Self {
+        let mut blocks = Vec::new();
+        blocks.push(closure);
+        Self {
+            blocks
+        }
+    }
+
     pub fn get(&self, name: &String) -> Option<&Value> {
         for block in self.blocks.iter().rev() {
             match block.get(name) {

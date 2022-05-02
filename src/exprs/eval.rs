@@ -32,5 +32,6 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::Block(block) => block.eval(state),
         Expression::If(if_expr) => if_expr.eval(state),
         Expression::While(while_expr) => while_expr.eval(state),
+        Expression::Closure(function) => function.eval(state),
     }
 }

@@ -52,7 +52,7 @@ fn main() {
 
             let mut lexer = Lexer::new(code.as_bytes());
 
-            match parser::parse(&mut lexer) {
+            match parser::parse(&mut lexer, &mut state) {
                 Ok(expression) => match exprs::eval(&expression, &mut state) {
                     Ok(value) => match value {
                         Value::Void => (),

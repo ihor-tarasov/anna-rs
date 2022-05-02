@@ -1,11 +1,11 @@
 use crate::{
     exprs::ArrayExpression,
-    lexer::{Lexer, TokenType},
+    lexer::{Lexer, TokenType}, State,
 };
 
 use super::{unexpected, unexpected_eof, ParserResult};
 
-pub fn parse(lexer: &mut Lexer) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
     let mut exprs = Vec::new();
 
     match lexer.peek() {
@@ -20,7 +20,7 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer)?);
+        exprs.push(super::parse_expression(lexer, state)?);
 
         match lexer.peek() {
             Some(token) => match token.ttype() {

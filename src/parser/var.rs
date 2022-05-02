@@ -1,11 +1,11 @@
 use crate::{
     exprs::VarExpression,
-    lexer::{Lexer, TokenType},
+    lexer::{Lexer, TokenType}, State,
 };
 
 use super::{parse_expression, unexpected, unexpected_eof, ParserResult};
 
-pub fn parse(lexer: &mut Lexer) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
     let token = match lexer.next() {
         Some(token) => token,
         None => return unexpected_eof(),
@@ -26,7 +26,7 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
         None => return unexpected_eof(),
     }
 
-    let expr = parse_expression(lexer)?;
+    let expr = parse_expression(lexer, state)?;
 
     Ok(VarExpression::new(expr, name, info))
 }

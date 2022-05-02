@@ -1,4 +1,6 @@
-use crate::StackFrame;
+use std::collections::HashMap;
+
+use crate::{StackFrame, types::Value};
 
 pub struct Stack {
     frames: Vec<StackFrame>,
@@ -19,8 +21,8 @@ impl Stack {
         self.frames.last_mut()
     }
 
-    pub fn push(&mut self) {
-        self.frames.push(StackFrame::new());
+    pub fn push(&mut self, closure: HashMap<String, Value>) {
+        self.frames.push(StackFrame::with_closure(closure));
     }
 
     pub fn pop(&mut self) -> Option<StackFrame> {

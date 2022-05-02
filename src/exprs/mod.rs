@@ -19,6 +19,7 @@ mod caching;
 mod block;
 mod if_expr;
 mod while_expr;
+mod closure;
 
 pub use expression::Expression;
 
@@ -35,5 +36,6 @@ pub use caching::CachingExpression;
 pub use block::BlockExpression;
 pub use if_expr::IfExpression;
 pub use while_expr::WhileExpression;
+pub use closure::ClosureExpression;
 
 pub use eval::eval;
