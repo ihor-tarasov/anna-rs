@@ -33,5 +33,6 @@ pub enum TokenType {
     Return,
     If,
     Else,
+    While,
     Unknown,
 }

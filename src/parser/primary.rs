@@ -4,7 +4,7 @@ use crate::{
     types::Value,
 };
 
-use super::{array, identifier, unexpected, unexpected_eof, unknown, var, ParserResult, caching, if_parser};
+use super::{array, identifier, unexpected, unexpected_eof, unknown, var, ParserResult, caching, if_parser, while_parser};
 
 pub fn parse(lexer: &mut Lexer) -> ParserResult {
     let token = match lexer.next() {
@@ -18,6 +18,7 @@ pub fn parse(lexer: &mut Lexer) -> ParserResult {
         TokenType::Identifier(name) => identifier::parse(lexer, name, info),
         TokenType::Var => var::parse(lexer),
         TokenType::If => if_parser::parse(lexer, info),
+        TokenType::While => while_parser::parse(lexer, info),
         TokenType::LeftSquareBracket => array::parse(lexer),
         TokenType::Break => caching::parse(lexer, Value::Break),
         TokenType::Return => caching::parse(lexer, Value::Return),

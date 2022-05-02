@@ -6,7 +6,7 @@ use crate::opers::{
     bitwise::{AndBitwise, BitwiseOperator, OrBitwise, ShlBitwise, ShrBitwise, XorBitwise},
     comparison::{
         ComparisonOperator, EqualComparison, GreaterComparison, GreaterEqualComparison,
-        LessComparison, LessEqualComparison,
+        LessComparison, LessEqualComparison, NotEqualComparison,
     },
     unary::{UnaryMinusOperator, UnaryNotOperator},
 };
@@ -14,7 +14,7 @@ use crate::opers::{
 use super::{
     assign::AssignExpression, index::IndexExpression, literal::LiteralExpression,
     var::VarExpression, variable::VariableExpression, ArrayExpression, BinaryExpression,
-    CachingExpression, CallExpression, UnaryExpression, block::BlockExpression, IfExpression,
+    CachingExpression, CallExpression, UnaryExpression, block::BlockExpression, IfExpression, WhileExpression,
 };
 
 pub enum Expression {
@@ -24,7 +24,7 @@ pub enum Expression {
     Multiply(Box<BinaryExpression<ArithmeticOperator<MultiplyArithmetic>>>),
     Divide(Box<BinaryExpression<ArithmeticOperator<DivideArithmetic>>>),
     Equal(Box<BinaryExpression<ComparisonOperator<EqualComparison>>>),
-    NotEqual(Box<BinaryExpression<ComparisonOperator<EqualComparison>>>),
+    NotEqual(Box<BinaryExpression<ComparisonOperator<NotEqualComparison>>>),
     Less(Box<BinaryExpression<ComparisonOperator<LessComparison>>>),
     Greater(Box<BinaryExpression<ComparisonOperator<GreaterComparison>>>),
     LessEqual(Box<BinaryExpression<ComparisonOperator<LessEqualComparison>>>),
@@ -45,4 +45,5 @@ pub enum Expression {
     Caching(Box<CachingExpression>),
     Block(BlockExpression),
     If(IfExpression),
+    While(Box<WhileExpression>),
 }

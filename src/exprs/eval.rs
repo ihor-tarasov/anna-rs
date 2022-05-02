@@ -31,5 +31,6 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::Caching(caching) => caching.eval(state),
         Expression::Block(block) => block.eval(state),
         Expression::If(if_expr) => if_expr.eval(state),
+        Expression::While(while_expr) => while_expr.eval(state),
     }
 }

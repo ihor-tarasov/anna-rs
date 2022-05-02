@@ -23,6 +23,7 @@ pub fn lex(reader: &mut Reader) -> Option<Token> {
         "return" => TokenType::Return,
         "if" => TokenType::If,
         "else" => TokenType::Else,
+        "while" => TokenType::While,
         _ => TokenType::Identifier(accumulator),
     };
 

@@ -62,6 +62,7 @@ mod call;
 mod caching;
 mod block;
 mod if_parser;
+mod while_parser;
 
 pub fn parse_expression(lexer: &mut Lexer) -> ParserResult {
     equality::parse(lexer)
