@@ -29,5 +29,7 @@ pub fn eval(expr: &Expression, state: &mut State) -> ExpressionResult {
         Expression::Index(index) => index.eval(state),
         Expression::Call(call) => call.eval(state),
         Expression::Caching(caching) => caching.eval(state),
+        Expression::Block(block) => block.eval(state),
+        Expression::If(if_expr) => if_expr.eval(state),
     }
 }

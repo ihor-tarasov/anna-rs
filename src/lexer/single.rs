@@ -18,6 +18,9 @@ pub fn lex(c: u8) -> TokenType {
         b',' => TokenType::Comma,
         b'(' => TokenType::LeftParenthesis,
         b')' => TokenType::RightParenthesis,
+        b'{' => TokenType::LeftBrace,
+        b'}' => TokenType::RightBrace,
+        b';' => TokenType::Semicolon,
         _ => TokenType::Unknown,
     }
 }

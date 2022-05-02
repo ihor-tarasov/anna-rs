@@ -34,6 +34,10 @@ fn main() {
         Value::Void
     });
 
+    state.native("exit".to_string(), |_state, _args| {
+        std::process::exit(0);
+    });
+
     loop {
         print!("-> ");
         let mut code = String::new();

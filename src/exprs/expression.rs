@@ -14,7 +14,7 @@ use crate::opers::{
 use super::{
     assign::AssignExpression, index::IndexExpression, literal::LiteralExpression,
     var::VarExpression, variable::VariableExpression, ArrayExpression, BinaryExpression,
-    CachingExpression, CallExpression, UnaryExpression,
+    CachingExpression, CallExpression, UnaryExpression, block::BlockExpression, IfExpression,
 };
 
 pub enum Expression {
@@ -43,4 +43,6 @@ pub enum Expression {
     Index(Box<IndexExpression>),
     Call(Box<CallExpression>),
     Caching(Box<CachingExpression>),
+    Block(BlockExpression),
+    If(IfExpression),
 }

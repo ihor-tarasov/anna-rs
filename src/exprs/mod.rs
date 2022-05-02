@@ -16,6 +16,8 @@ mod array;
 mod index;
 mod call;
 mod caching;
+mod block;
+mod if_expr;
 
 pub use expression::Expression;
 
@@ -29,5 +31,7 @@ pub use array::ArrayExpression;
 pub use index::IndexExpression;
 pub use call::CallExpression;
 pub use caching::CachingExpression;
+pub use block::BlockExpression;
+pub use if_expr::IfExpression;
 
 pub use eval::eval;

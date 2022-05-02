@@ -11,6 +11,7 @@ pub enum ExpressionErrorType {
     ExpectIndexableObject,
     IndexOutOfBounds,
     NotCallableObject,
+    ExpectedBoolForConditions,
 }
 
 pub struct ExpressionError {

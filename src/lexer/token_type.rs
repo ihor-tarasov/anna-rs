@@ -24,9 +24,14 @@ pub enum TokenType {
     Comma,              // ,
     LeftParenthesis,    // (
     RightParenthesis,   // )
+    LeftBrace,          // {
+    RightBrace,         // }
+    Semicolon,          // ;
     Var,
     Break,
     Continue,
     Return,
+    If,
+    Else,
     Unknown,
 }
