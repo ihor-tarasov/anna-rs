@@ -3,7 +3,7 @@ use crate::{
     lexer::{Lexer, TokenType}, Functions,
 };
 
-use super::{unexpected, unexpected_eof, ParserResult};
+use super::{ParserResult, result};
 
 pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     let mut exprs = Vec::new();
@@ -16,7 +16,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
             }
             _ => (),
         },
-        None => return unexpected_eof(),
+        None => return result::unexpected_eof(),
     }
 
     loop {
@@ -31,9 +31,9 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
                 TokenType::Comma => {
                     lexer.next();
                 }
-                _ => return unexpected(token.info()),
+                _ => return result::unexpected(token.info()),
             },
-            None => return unexpected_eof(),
+            None => return result::unexpected_eof(),
         }
     }
 

@@ -4,7 +4,7 @@ use crate::{
     Functions,
 };
 
-use super::{primary, unexpected_eof, ParserResult};
+use super::{primary, ParserResult, result};
 
 pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     if let Some(token) = lexer.peek() {
@@ -28,6 +28,6 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
             _ => primary::parse(lexer, functions),
         }
     } else {
-        unexpected_eof()
+        result::unexpected_eof()
     }
 }

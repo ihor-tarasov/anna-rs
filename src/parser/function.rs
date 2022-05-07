@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{lexer::{Lexer, TokenType, TokenInfo}, exprs::{Expression, ClosureExpression}, Function, Functions};
 
-use super::{ParserResult, unexpected, unexpected_eof, block, ParserError, ParserErrorType};
+use super::{ParserResult, block, ParserError, ParserErrorType, result};
 
 pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> ParserResult {
     let mut args = HashSet::new();
@@ -19,10 +19,10 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> P
                 TokenType::VerticalBar => {
                     break;
                 },
-                _ => return unexpected(info),
+                _ => return result::unexpected(info),
             }
         } else {
-            return unexpected_eof();
+            return result::unexpected_eof();
         }
 
         if let Some(token) = lexer.next() {
@@ -30,10 +30,10 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> P
             match token.take_type() {
                 TokenType::Comma => (),
                 TokenType::VerticalBar => break,
-                _ => return unexpected(info),
+                _ => return result::unexpected(info),
             }
         } else {
-            return unexpected_eof();
+            return result::unexpected_eof();
         }
     }
 

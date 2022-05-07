@@ -4,7 +4,7 @@ use crate::{
     Functions,
 };
 
-use super::{call, unexpected, ParserResult, unexpected_eof};
+use super::{call, ParserResult, result};
 
 pub fn parse(
     lexer: &mut Lexer,
@@ -16,7 +16,7 @@ pub fn parse(
     if let Some(token) = lexer.next() {
         match token.take_type() {
             TokenType::RightSquareBracket => (),
-            _ => return unexpected(info),
+            _ => return result::unexpected(info),
         }
     }
 
@@ -55,9 +55,9 @@ pub fn parse(
                                 true,
                             );
                         },
-                        _ => return unexpected(token.info())
+                        _ => return result::unexpected(token.info())
                     },
-                    None => return unexpected_eof(),
+                    None => return result::unexpected_eof(),
                 }
             }
             _ => (),

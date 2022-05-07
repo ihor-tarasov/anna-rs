@@ -4,7 +4,7 @@ use crate::{
     Functions,
 };
 
-use super::{index, unexpected, unexpected_eof, ParserResult};
+use super::{index, ParserResult, result};
 
 pub fn parse(
     lexer: &mut Lexer,
@@ -23,7 +23,7 @@ pub fn parse(
             }
             _ => (),
         },
-        None => return unexpected_eof(),
+        None => return result::unexpected_eof(),
     }
 
     loop {
@@ -38,9 +38,9 @@ pub fn parse(
                 TokenType::Comma => {
                     lexer.next();
                 }
-                _ => return unexpected(token.info()),
+                _ => return result::unexpected(token.info()),
             },
-            None => return unexpected_eof(),
+            None => return result::unexpected_eof(),
         }
     }
 

@@ -4,7 +4,7 @@ use crate::{
     Functions,
 };
 
-use super::{call, index, parse_expression, ParserResult, unexpected_eof, unexpected};
+use super::{call, index, ParserResult, result};
 
 pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: TokenInfo) -> ParserResult {
     if let Some(token) = lexer.peek() {
@@ -12,7 +12,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: T
             TokenType::Equal => {
                 lexer.next();
                 return Ok(AssignExpression::new(
-                    parse_expression(lexer, functions)?,
+                    super::parse_expression(lexer, functions)?,
                     name,
                     info,
                 ));
@@ -50,9 +50,9 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: T
                                 true,
                             );
                         },
-                        _ => return unexpected(token.info())
+                        _ => return result::unexpected(token.info())
                     },
-                    None => return unexpected_eof(),
+                    None => return result::unexpected_eof(),
                 }
             }
             _ => (),
