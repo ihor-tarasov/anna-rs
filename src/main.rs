@@ -8,7 +8,7 @@ use anna_rs::{
     debug,
     exprs::{self, EvalArgs},
     lexer::Lexer,
-    parser::{self, ParserErrorType},
+    parser::{self, ParserErrorType, Parser},
     types::{Storage, Value},
     Functions, State,
 };
@@ -35,7 +35,9 @@ fn main() {
 
             let mut lexer = Lexer::new(code.as_bytes());
 
-            match parser::parse(&mut lexer, Arc::get_mut(&mut functions).unwrap()) {
+            let mut parser = Parser::new(Arc::get_mut(&mut functions).unwrap());
+            
+            match parser::parse(&mut lexer, &mut parser) {
                 Ok(expression) => {
                     let functions = Arc::clone(&functions);
                     let mut eval_args = EvalArgs {

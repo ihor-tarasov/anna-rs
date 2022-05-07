@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 
-use crate::{lexer::{Lexer, TokenType, TokenInfo}, exprs::{Expression, ClosureExpression}, Function, Functions};
+use crate::{lexer::{Lexer, TokenType, TokenInfo}, exprs::{Expression, ClosureExpression}, Function};
 
-use super::{ParserResult, block, ParserError, ParserErrorType, result};
+use super::{ParserResult, block, ParserError, ParserErrorType, result, Parser};
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserResult {
     let mut args = HashSet::new();
 
     loop {
@@ -37,14 +37,14 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> P
         }
     }
 
-    let block = match block::parse(lexer, functions)? {
+    let block = match block::parse(lexer, parser)? {
         Expression::Block(block) => block,
         _ => panic!("Expected BlockExpression"),
     };
 
     let function = Function::new(args, block, info);
 
-    let id = functions.push(function);
+    let id = parser.functions_mut().push(function);
 
     Ok(ClosureExpression::new(HashSet::new(), id))
 }

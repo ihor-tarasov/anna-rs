@@ -1,15 +1,15 @@
 use crate::{
     exprs::LiteralExpression,
     lexer::{Lexer, TokenType},
-    types::Value, Functions,
+    types::Value,
 };
 
 use super::{
     array, caching, function, identifier, if_parser, var,
-    while_parser, ParserResult, result,
+    while_parser, ParserResult, result, Parser,
 };
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
     let token = match lexer.next() {
         Some(token) => token,
         None => return result::unexpected_eof(),
@@ -18,15 +18,15 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     match token.take_type() {
         TokenType::Integer(value) => Ok(LiteralExpression::new(Value::Integer(value))),
         TokenType::Real(value) => Ok(LiteralExpression::new(Value::Real(value))),
-        TokenType::Identifier(name) => identifier::parse(lexer, functions, name, info),
-        TokenType::Var => var::parse(lexer, functions),
-        TokenType::If => if_parser::parse(lexer, functions, info),
-        TokenType::While => while_parser::parse(lexer, functions, info),
-        TokenType::LeftSquareBracket => array::parse(lexer, functions),
-        TokenType::Break => caching::parse(lexer, functions, Value::Break),
-        TokenType::Return => caching::parse(lexer, functions, Value::Return),
+        TokenType::Identifier(name) => identifier::parse(lexer, parser, name, info),
+        TokenType::Var => var::parse(lexer, parser),
+        TokenType::If => if_parser::parse(lexer, parser, info),
+        TokenType::While => while_parser::parse(lexer, parser, info),
+        TokenType::LeftSquareBracket => array::parse(lexer, parser),
+        TokenType::Break => caching::parse(lexer, parser, Value::Break),
+        TokenType::Return => caching::parse(lexer, parser, Value::Return),
         TokenType::Continue => Ok(LiteralExpression::new(Value::Continue)),
-        TokenType::VerticalBar => function::parse(lexer, functions, info),
+        TokenType::VerticalBar => function::parse(lexer, parser, info),
         TokenType::Unknown => result::unknown(info),
         _ => result::unexpected(info),
     }

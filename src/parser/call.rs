@@ -1,14 +1,13 @@
 use crate::{
     exprs::{CallExpression, Expression},
     lexer::{Lexer, TokenInfo, TokenType},
-    Functions,
 };
 
-use super::{index, ParserResult, result};
+use super::{index, ParserResult, result, Parser};
 
 pub fn parse(
     lexer: &mut Lexer,
-    functions: &mut Functions,
+    parser: &mut Parser,
     from: Expression,
     info: TokenInfo,
     is_async: bool,
@@ -27,7 +26,7 @@ pub fn parse(
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer, functions)?);
+        exprs.push(super::parse_expression(lexer, parser)?);
 
         match lexer.peek() {
             Some(token) => match token.ttype() {
@@ -50,7 +49,7 @@ pub fn parse(
                 lexer.next();
                 return index::parse(
                     lexer,
-                    functions,
+                    parser,
                     CallExpression::new(from, exprs, is_async, info.clone()),
                     info,
                 );

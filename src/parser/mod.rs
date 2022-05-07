@@ -26,13 +26,33 @@ pub use result::ParserError;
 pub use result::ParserErrorType;
 pub use result::ParserResult;
 
-pub fn parse_expression(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
-    equality::parse(lexer, functions)
+pub struct Parser<'a> {
+    functions: &'a mut Functions,
 }
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
+impl<'a> Parser<'a> {
+    pub fn new(functions: &'a mut Functions) -> Self {
+        Self {
+            functions,
+        }
+    }
+
+    pub fn functions(&self) -> &Functions {
+        self.functions
+    }
+
+    pub fn functions_mut(&mut self) -> &mut Functions {
+        self.functions
+    }
+}
+
+pub fn parse_expression(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
+    equality::parse(lexer, parser)
+}
+
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
     let result = match lexer.peek() {
-        Some(_) => parse_expression(lexer, functions)?,
+        Some(_) => parse_expression(lexer, parser)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,

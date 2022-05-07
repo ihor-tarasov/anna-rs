@@ -1,12 +1,11 @@
 use crate::{
     exprs::{Expression, IfExpression},
     lexer::{Lexer, TokenInfo, TokenType},
-    Functions,
 };
 
-use super::{block, result, ParserResult};
+use super::{block, result, ParserResult, Parser};
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions, if_info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, if_info: TokenInfo) -> ParserResult {
     let mut conditions = Vec::new();
     let mut blocks = Vec::new();
     let mut info = Vec::new();
@@ -14,8 +13,8 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, if_info: TokenInfo) -
     info.push(if_info);
 
     loop {
-        let condition = super::parse_expression(lexer, functions)?;
-        let block = match block::parse(lexer, functions)? {
+        let condition = super::parse_expression(lexer, parser)?;
+        let block = match block::parse(lexer, parser)? {
             Expression::Block(block) => block,
             _ => panic!("Expected BlockExpression"),
         };
@@ -34,7 +33,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, if_info: TokenInfo) -
                                 lexer.next();
                             }
                             _ => {
-                                else_block = Some(match block::parse(lexer, functions)? {
+                                else_block = Some(match block::parse(lexer, parser)? {
                                     Expression::Block(block) => block,
                                     _ => panic!("Expected BlockExpression"),
                                 });

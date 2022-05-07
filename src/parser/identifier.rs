@@ -1,18 +1,17 @@
 use crate::{
     exprs::{AssignExpression, VariableExpression},
     lexer::{Lexer, TokenInfo, TokenType},
-    Functions,
 };
 
-use super::{call, index, ParserResult, result};
+use super::{call, index, ParserResult, result, Parser};
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, name: String, info: TokenInfo) -> ParserResult {
     if let Some(token) = lexer.peek() {
         match token.ttype() {
             TokenType::Equal => {
                 lexer.next();
                 return Ok(AssignExpression::new(
-                    super::parse_expression(lexer, functions)?,
+                    super::parse_expression(lexer, parser)?,
                     name,
                     info,
                 ));
@@ -21,7 +20,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: T
                 lexer.next();
                 return index::parse(
                     lexer,
-                    functions,
+                    parser,
                     VariableExpression::new(name, info.clone()),
                     info,
                 );
@@ -30,7 +29,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: T
                 lexer.next();
                 return call::parse(
                     lexer,
-                    functions,
+                    parser,
                     VariableExpression::new(name, info.clone()),
                     info,
                     false,
@@ -44,7 +43,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: T
                             lexer.next();
                             return call::parse(
                                 lexer,
-                                functions,
+                                parser,
                                 VariableExpression::new(name, info.clone()),
                                 info,
                                 true,

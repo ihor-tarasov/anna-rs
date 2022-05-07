@@ -1,11 +1,11 @@
 use crate::{
     exprs::ArrayExpression,
-    lexer::{Lexer, TokenType}, Functions,
+    lexer::{Lexer, TokenType},
 };
 
-use super::{ParserResult, result};
+use super::{ParserResult, result, Parser};
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
     let mut exprs = Vec::new();
 
     match lexer.peek() {
@@ -20,7 +20,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer, functions)?);
+        exprs.push(super::parse_expression(lexer, parser)?);
 
         match lexer.peek() {
             Some(token) => match token.ttype() {

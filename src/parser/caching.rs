@@ -1,8 +1,8 @@
-use crate::{lexer::{Lexer, TokenType}, types::Value, exprs::CachingExpression, Functions};
+use crate::{lexer::{Lexer, TokenType}, types::Value, exprs::CachingExpression};
 
-use super::{ParserResult, parse_expression};
+use super::{ParserResult, parse_expression, Parser};
 
-pub fn parse(lexer: &mut Lexer, functions: &mut Functions, value: Value) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, value: Value) -> ParserResult {
     let mut expr = None;
 
     if let Some(token) = lexer.peek() {
@@ -11,7 +11,7 @@ pub fn parse(lexer: &mut Lexer, functions: &mut Functions, value: Value) -> Pars
             TokenType::Comma => (),
             TokenType::RightParenthesis => (),
             _ => {
-                expr = Some(parse_expression(lexer, functions)?);
+                expr = Some(parse_expression(lexer, parser)?);
             },
         }
     }

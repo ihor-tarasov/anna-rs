@@ -1,18 +1,17 @@
 use crate::{
     exprs::{Expression, IndexExpression},
     lexer::{Lexer, TokenInfo, TokenType},
-    Functions,
 };
 
-use super::{call, ParserResult, result};
+use super::{call, ParserResult, result, Parser};
 
 pub fn parse(
     lexer: &mut Lexer,
-    functions: &mut Functions,
+    parser: &mut Parser,
     from: Expression,
     info: TokenInfo,
 ) -> ParserResult {
-    let index = super::parse_expression(lexer, functions)?;
+    let index = super::parse_expression(lexer, parser)?;
     if let Some(token) = lexer.next() {
         match token.take_type() {
             TokenType::RightSquareBracket => (),
@@ -26,7 +25,7 @@ pub fn parse(
                 lexer.next();
                 return parse(
                     lexer,
-                    functions,
+                    parser,
                     IndexExpression::new(from, index, info.clone()),
                     info,
                 );
@@ -35,7 +34,7 @@ pub fn parse(
                 lexer.next();
                 return call::parse(
                     lexer,
-                    functions,
+                    parser,
                     IndexExpression::new(from, index, info.clone()),
                     info,
                     false,
@@ -49,7 +48,7 @@ pub fn parse(
                             lexer.next();
                             return call::parse(
                                 lexer,
-                                functions,
+                                parser,
                                 IndexExpression::new(from, index, info.clone()),
                                 info,
                                 true,
