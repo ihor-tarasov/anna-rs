@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::{types::Object, State};
+use crate::types::Object;
 
-use super::{Expression, ExpressionResult};
+use super::{EvalArgs, Expression, ExpressionResult};
 
 pub struct ClosureExpression {
     closure: HashSet<String>,
@@ -14,24 +14,20 @@ impl ClosureExpression {
         Expression::Closure(Self { closure, id })
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+    pub fn eval(&self, args: &EvalArgs) -> ExpressionResult {
         let mut closure = HashMap::new();
 
         for name in &self.closure {
-            if let Some(frame) = state.stack().frame() {
-                closure.insert(name.clone(), frame.get(name).unwrap().clone());
-            } else {
-                closure.insert(
-                    name.clone(),
-                    state.global().borrow().frame().get(name).unwrap().clone(),
-                );
-            }
+            closure.insert(
+                name.clone(),
+                args.state.stack().frame().get(name).unwrap().clone(),
+            );
         }
 
-        Ok(state
-            .global()
-            .borrow_mut()
-            .storage_mut()
+        Ok(args
+            .storage
+            .lock()
+            .unwrap()
             .push(Object::Closure((self.id, closure))))
     }
 }

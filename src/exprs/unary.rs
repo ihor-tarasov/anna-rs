@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 
-use crate::{lexer::TokenInfo, opers::UnaryOperator, State};
+use crate::{lexer::TokenInfo, opers::UnaryOperator};
 
-use super::{binary::map_error, eval, Expression, ExpressionResult};
+use super::{binary, EvalArgs, Expression, ExpressionResult};
 
 pub struct UnaryExpression<T: UnaryOperator> {
     info: TokenInfo,
@@ -19,11 +19,11 @@ impl<T: UnaryOperator> UnaryExpression<T> {
         }
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
-        let value = eval(&self.expr, state)?;
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
+        let value = super::eval(&self.expr, args)?;
         match T::eval(value) {
             Ok(value) => Ok(value),
-            Err(error) => map_error(self.info.clone(), error),
+            Err(error) => binary::map_error(self.info.clone(), error),
         }
     }
 }

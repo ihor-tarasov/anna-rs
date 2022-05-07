@@ -1,10 +1,14 @@
-use crate::{lexer::{Lexer, TokenInfo}, exprs::{Expression, WhileExpression}, State};
+use crate::{
+    exprs::{Expression, WhileExpression},
+    lexer::{Lexer, TokenInfo},
+    Functions,
+};
 
-use super::{ParserResult, parse_expression, block};
+use super::{block, parse_expression, ParserResult};
 
-pub fn parse(lexer: &mut Lexer, state: &mut State, info: TokenInfo) -> ParserResult {
-    let condition = parse_expression(lexer, state)?;
-    let block = match block::parse(lexer, state)? {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions, info: TokenInfo) -> ParserResult {
+    let condition = parse_expression(lexer, functions)?;
+    let block = match block::parse(lexer, functions)? {
         Expression::Block(block) => block,
         _ => panic!("Expected block"),
     };

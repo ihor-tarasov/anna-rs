@@ -1,8 +1,8 @@
-use crate::{lexer::{Lexer, TokenType}, exprs::BlockExpression, State};
+use crate::{lexer::{Lexer, TokenType}, exprs::BlockExpression, Functions};
 
 use super::{parse_expression, unexpected_eof, ParserResult};
 
-pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     let is_multiline = if let Some(token) = lexer.peek() {
         match token.ttype() {
             TokenType::LeftBrace => {
@@ -17,7 +17,7 @@ pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
 
     let mut stats = Vec::new();
 
-    stats.push(parse_expression(lexer, state)?);
+    stats.push(parse_expression(lexer, functions)?);
 
     if is_multiline {
         loop {
@@ -45,7 +45,7 @@ pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
                 return unexpected_eof();
             }
 
-            stats.push(parse_expression(lexer, state)?);
+            stats.push(parse_expression(lexer, functions)?);
         }
     }
 

@@ -1,7 +1,7 @@
 use crate::{
     exprs::LiteralExpression,
     lexer::{Lexer, TokenType},
-    types::Value, State,
+    types::Value, Functions,
 };
 
 use super::{
@@ -9,7 +9,7 @@ use super::{
     while_parser, ParserResult,
 };
 
-pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     let token = match lexer.next() {
         Some(token) => token,
         None => return unexpected_eof(),
@@ -18,15 +18,15 @@ pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
     match token.take_type() {
         TokenType::Integer(value) => Ok(LiteralExpression::new(Value::Integer(value))),
         TokenType::Real(value) => Ok(LiteralExpression::new(Value::Real(value))),
-        TokenType::Identifier(name) => identifier::parse(lexer, state, name, info),
-        TokenType::Var => var::parse(lexer, state),
-        TokenType::If => if_parser::parse(lexer, state, info),
-        TokenType::While => while_parser::parse(lexer, state, info),
-        TokenType::LeftSquareBracket => array::parse(lexer, state),
-        TokenType::Break => caching::parse(lexer, state, Value::Break),
-        TokenType::Return => caching::parse(lexer, state, Value::Return),
+        TokenType::Identifier(name) => identifier::parse(lexer, functions, name, info),
+        TokenType::Var => var::parse(lexer, functions),
+        TokenType::If => if_parser::parse(lexer, functions, info),
+        TokenType::While => while_parser::parse(lexer, functions, info),
+        TokenType::LeftSquareBracket => array::parse(lexer, functions),
+        TokenType::Break => caching::parse(lexer, functions, Value::Break),
+        TokenType::Return => caching::parse(lexer, functions, Value::Return),
         TokenType::Continue => Ok(LiteralExpression::new(Value::Continue)),
-        TokenType::VerticalBar => function::parse(lexer, state, info),
+        TokenType::VerticalBar => function::parse(lexer, functions, info),
         TokenType::Unknown => unknown(info),
         _ => unexpected(info),
     }

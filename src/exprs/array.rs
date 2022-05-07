@@ -1,6 +1,6 @@
-use crate::{types::Object, State};
+use crate::types::Object;
 
-use super::{eval, Expression, ExpressionResult};
+use super::{EvalArgs, Expression, ExpressionResult};
 
 pub struct ArrayExpression {
     exprs: Vec<Expression>,
@@ -11,16 +11,12 @@ impl ArrayExpression {
         Expression::Array(Self { exprs })
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
         let mut array = Vec::new();
         array.reserve(self.exprs.len());
         for expr in &self.exprs {
-            array.push(eval(expr, state)?);
+            array.push(super::eval(expr, args)?);
         }
-        Ok(state
-            .global()
-            .borrow_mut()
-            .storage_mut()
-            .push(Object::Array(array)))
+        Ok(args.storage.lock().unwrap().push(Object::Array(array)))
     }
 }

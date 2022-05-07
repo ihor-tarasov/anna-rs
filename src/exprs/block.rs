@@ -1,37 +1,29 @@
-use crate::{State, types::Value};
+use crate::types::Value;
 
-use super::{Expression, ExpressionResult, eval};
+use super::{EvalArgs, Expression, ExpressionResult};
 
 pub struct BlockExpression {
     stats: Vec<Expression>,
 }
 
-struct BlockGuard<'a> {
-    state: &'a mut State,
+struct BlockGuard<'a, 'b> {
+    args: &'a mut EvalArgs<'b>,
 }
 
-impl<'a> BlockGuard<'a> {
-    pub fn new(state: &'a mut State) -> Self {
-        match state.stack_mut().frame_mut() {
-            Some(frame) => frame.push(),
-            None => state.global().borrow_mut().frame_mut().push(),
-        }
-        Self {
-            state,
-        }
+impl<'a, 'b> BlockGuard<'a, 'b> {
+    pub fn new(args: &'a mut EvalArgs<'b>) -> Self {
+        args.state.stack_mut().frame_mut().push();
+        Self { args }
     }
 
-    pub fn state_mut(&mut self) -> &mut State {
-        self.state
+    pub fn args_mut(&mut self) -> &mut EvalArgs<'b> {
+        self.args
     }
 }
 
-impl<'a> Drop for BlockGuard<'a> {
+impl<'a, 'b> Drop for BlockGuard<'a, 'b> {
     fn drop(&mut self) {
-        match self.state.stack_mut().frame_mut() {
-            Some(frame) => frame.pop().unwrap(),
-            None => self.state.global().borrow_mut().frame_mut().pop().unwrap(),
-        };
+        self.args.state.stack_mut().frame_mut().pop();
     }
 }
 
@@ -40,11 +32,11 @@ impl BlockExpression {
         Expression::Block(Self { stats })
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
-        let mut guard = BlockGuard::new(state);
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
+        let mut guard = BlockGuard::new(args);
         let mut result = Value::Void;
         for stat in &self.stats {
-            result = eval(stat, guard.state_mut())?;
+            result = super::eval(stat, guard.args_mut())?;
             match result.clone() {
                 Value::Break => return Ok(Value::Break),
                 Value::Continue => return Ok(Value::Continue),

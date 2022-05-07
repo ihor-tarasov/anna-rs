@@ -1,44 +1,31 @@
-use crate::{
-    types::{Storage, Value},
-    StackFrame, State, Function,
-};
+use std::sync::Arc;
 
-pub type NativeFunctionCallback = dyn Fn(&mut State, Vec<Value>) -> Value;
+use crate::{types::Value, Function, State};
+
+pub type NativeFunctionCallback = dyn Fn(Vec<Value>) -> Value + Send + Sync;
 pub type NativeFunctionCallbackBox = Box<NativeFunctionCallback>;
 
-pub struct GlobalState {
-    frame: StackFrame,
-    storage: Storage,
+pub struct Functions {
     natives: Vec<NativeFunctionCallbackBox>,
     functions: Vec<Function>,
 }
 
-impl GlobalState {
+pub type FunctionsRc = Arc<Functions>;
+
+pub fn native<F>(state: &mut State, functions: &mut Functions, name: String, f: F) -> bool
+where
+    F: Fn(Vec<Value>) -> Value + 'static + Send + Sync,
+{
+    let value = Value::NativeFunctionId(functions.push_native(Box::new(f)));
+    state.stack_mut().frame_mut().var(name, value)
+}
+
+impl Functions {
     pub fn new() -> Self {
-        let mut frame = StackFrame::new();
-        frame.push();
         Self {
-            frame,
-            storage: Storage::new(),
             natives: Vec::new(),
             functions: Vec::new(),
         }
-    }
-
-    pub fn frame(&self) -> &StackFrame {
-        &self.frame
-    }
-
-    pub fn frame_mut(&mut self) -> &mut StackFrame {
-        &mut self.frame
-    }
-
-    pub fn storage(&self) -> &Storage {
-        &self.storage
-    }
-
-    pub fn storage_mut(&mut self) -> &mut Storage {
-        &mut self.storage
     }
 
     pub fn push_native(&mut self, callback: NativeFunctionCallbackBox) -> usize {
@@ -50,7 +37,7 @@ impl GlobalState {
         self.natives.get(id).expect("Native Function not exist")
     }
 
-    pub fn push_function(&mut self, function: Function) -> usize {
+    pub fn push(&mut self, function: Function) -> usize {
         self.functions.push(function);
         self.functions.len() - 1
     }

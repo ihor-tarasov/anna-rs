@@ -1,6 +1,6 @@
-use crate::{types::Value, State};
+use crate::types::Value;
 
-use super::{eval, Expression, ExpressionResult};
+use super::{EvalArgs, Expression, ExpressionResult};
 
 pub struct CachingExpression {
     expr: Option<Expression>,
@@ -12,11 +12,11 @@ impl CachingExpression {
         Expression::Caching(Box::new(Self { expr, value }))
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
         if let Some(expr) = &self.expr {
-            *state.cache_mut() = eval(expr, state)?;
+            *args.state.cache_mut() = super::eval(expr, args)?;
         } else {
-            *state.cache_mut() = Value::Void;
+            *args.state.cache_mut() = Value::Void;
         }
 
         Ok(self.value.clone())

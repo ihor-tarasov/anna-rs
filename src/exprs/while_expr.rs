@@ -1,7 +1,7 @@
-use crate::{lexer::TokenInfo, types::Value, State};
+use crate::{lexer::TokenInfo, types::Value};
 
 use super::{
-    eval, BlockExpression, Expression, ExpressionError, ExpressionErrorType, ExpressionResult,
+    BlockExpression, EvalArgs, Expression, ExpressionError, ExpressionErrorType, ExpressionResult,
 };
 
 pub struct WhileExpression {
@@ -19,10 +19,10 @@ impl WhileExpression {
         }))
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
         let mut result = Value::Void;
         loop {
-            match eval(&self.condition, state)? {
+            match super::eval(&self.condition, args)? {
                 Value::Boolean(value) => {
                     if !value {
                         break;
@@ -36,10 +36,10 @@ impl WhileExpression {
                 }
             }
 
-            let value = self.block.eval(state)?;
+            let value = self.block.eval(args)?;
             match value {
                 Value::Break => {
-                    result = state.cache().clone();
+                    result = args.state.cache().clone();
                     break;
                 }
                 Value::Continue => (),

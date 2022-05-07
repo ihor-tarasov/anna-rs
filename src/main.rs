@@ -1,42 +1,25 @@
-use std::io::Write;
-
-use anna_rs::{
-    debug, exprs,
-    lexer::Lexer,
-    parser::{self, ParserErrorType},
-    types::Value,
-    State,
+use std::{
+    collections::HashMap,
+    io::Write,
+    sync::{Arc, Mutex},
 };
 
-fn aria_print(args: Vec<Value>) {
-    let mut it = args.iter();
-
-    if let Some(value) = it.next() {
-        debug::print_value(value.clone());
-        while let Some(value) = it.next() {
-            print!(", ");
-            debug::print_value(value.clone());
-        }
-    }
-}
+use anna_rs::{
+    debug,
+    exprs::{self, EvalArgs},
+    lexer::Lexer,
+    parser::{self, ParserErrorType},
+    types::{Storage, Value},
+    Functions, State,
+};
 
 fn main() {
+    let storage = Arc::new(Mutex::new(Storage::new()));
     let mut state = State::new();
+    state.stack_mut().push(HashMap::new());
 
-    state.native("print".to_string(), |_state, args| {
-        aria_print(args);
-        Value::Void
-    });
-
-    state.native("println".to_string(), |_state, args| {
-        aria_print(args);
-        println!();
-        Value::Void
-    });
-
-    state.native("exit".to_string(), |_state, _args| {
-        std::process::exit(0);
-    });
+    let mut functions = Arc::new(Functions::new());
+    anna_rs::std::register(&mut state, Arc::get_mut(&mut functions).unwrap());
 
     loop {
         print!("-> ");
@@ -52,17 +35,25 @@ fn main() {
 
             let mut lexer = Lexer::new(code.as_bytes());
 
-            match parser::parse(&mut lexer, &mut state) {
-                Ok(expression) => match exprs::eval(&expression, &mut state) {
-                    Ok(value) => match value {
-                        Value::Void => (),
-                        _ => debug::println_value(value),
-                    },
-                    Err(error) => {
-                        debug::print_info(code.as_bytes(), error.info());
-                        println!("Runtime error: {:?}", error.etype());
+            match parser::parse(&mut lexer, Arc::get_mut(&mut functions).unwrap()) {
+                Ok(expression) => {
+                    let functions = Arc::clone(&functions);
+                    let mut eval_args = EvalArgs {
+                        state: &mut state,
+                        storage: storage.clone(),
+                        functions,
+                    };
+                    match exprs::eval(&expression, &mut eval_args) {
+                        Ok(value) => match value {
+                            Value::Void => (),
+                            _ => debug::println_value(value),
+                        },
+                        Err(error) => {
+                            debug::print_info(code.as_bytes(), error.info());
+                            println!("Runtime error: {:?}", error.etype());
+                        }
                     }
-                },
+                }
                 Err(error) => {
                     match error.etype() {
                         ParserErrorType::UnexpectedEndOfFile => {

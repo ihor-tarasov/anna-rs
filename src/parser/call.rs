@@ -1,16 +1,17 @@
 use crate::{
     exprs::{CallExpression, Expression},
     lexer::{Lexer, TokenInfo, TokenType},
-    State,
+    Functions,
 };
 
 use super::{index, unexpected, unexpected_eof, ParserResult};
 
 pub fn parse(
     lexer: &mut Lexer,
-    state: &mut State,
+    functions: &mut Functions,
     from: Expression,
     info: TokenInfo,
+    is_async: bool,
 ) -> ParserResult {
     let mut exprs = Vec::new();
 
@@ -18,7 +19,7 @@ pub fn parse(
         Some(token) => match token.ttype() {
             TokenType::RightParenthesis => {
                 lexer.next();
-                return Ok(CallExpression::new(from, exprs, info));
+                return Ok(CallExpression::new(from, exprs, is_async, info));
             }
             _ => (),
         },
@@ -26,7 +27,7 @@ pub fn parse(
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer, state)?);
+        exprs.push(super::parse_expression(lexer, functions)?);
 
         match lexer.peek() {
             Some(token) => match token.ttype() {
@@ -49,8 +50,8 @@ pub fn parse(
                 lexer.next();
                 return index::parse(
                     lexer,
-                    state,
-                    CallExpression::new(from, exprs, info.clone()),
+                    functions,
+                    CallExpression::new(from, exprs, is_async, info.clone()),
                     info,
                 );
             }
@@ -58,5 +59,5 @@ pub fn parse(
         }
     }
 
-    Ok(CallExpression::new(from, exprs, info))
+    Ok(CallExpression::new(from, exprs, is_async, info))
 }

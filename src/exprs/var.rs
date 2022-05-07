@@ -1,6 +1,6 @@
-use crate::{lexer::TokenInfo, State};
+use crate::lexer::TokenInfo;
 
-use super::{eval, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
+use super::{EvalArgs, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
 
 pub struct VarExpression {
     expr: Expression,
@@ -20,25 +20,17 @@ impl VarExpression {
         Expression::Var(Box::new(Self { expr, name, info }))
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
-        let value = eval(&self.expr, state)?;
-        if let Some(frame) = state.stack_mut().frame_mut() {
-            if frame.var(self.name.clone(), value.clone()) {
-                Ok(value)
-            } else {
-                variable_already_exist(self.info.clone())
-            }
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
+        let value = super::eval(&self.expr, args)?;
+        if args
+            .state
+            .stack_mut()
+            .frame_mut()
+            .var(self.name.clone(), value.clone())
+        {
+            Ok(value)
         } else {
-            if state
-                .global()
-                .borrow_mut()
-                .frame_mut()
-                .var(self.name.clone(), value.clone())
-            {
-                Ok(value)
-            } else {
-                variable_already_exist(self.info.clone())
-            }
+            variable_already_exist(self.info.clone())
         }
     }
 }

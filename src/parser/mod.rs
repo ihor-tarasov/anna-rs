@@ -1,6 +1,6 @@
 use crate::{
     exprs::Expression,
-    lexer::{Lexer, TokenInfo}, State,
+    lexer::{Lexer, TokenInfo}, Functions,
 };
 
 #[derive(Debug, Clone, PartialEq)]
@@ -66,13 +66,13 @@ mod if_parser;
 mod while_parser;
 mod function;
 
-pub fn parse_expression(lexer: &mut Lexer, state: &mut State) -> ParserResult {
-    equality::parse(lexer, state)
+pub fn parse_expression(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
+    equality::parse(lexer, functions)
 }
 
-pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     let result = match lexer.peek() {
-        Some(_) => parse_expression(lexer, state)?,
+        Some(_) => parse_expression(lexer, functions)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,

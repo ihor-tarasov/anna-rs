@@ -13,19 +13,19 @@ impl Stack {
         }
     }
 
-    pub fn frame(&self) -> Option<&StackFrame> {
-        self.frames.last()
+    pub fn frame(&self) -> &StackFrame {
+        self.frames.last().unwrap()
     }
 
-    pub fn frame_mut(&mut self) -> Option<&mut StackFrame> {
-        self.frames.last_mut()
+    pub fn frame_mut(&mut self) -> &mut StackFrame {
+        self.frames.last_mut().unwrap()
     }
 
     pub fn push(&mut self, closure: HashMap<String, Value>) {
         self.frames.push(StackFrame::with_closure(closure));
     }
 
-    pub fn pop(&mut self) -> Option<StackFrame> {
-        self.frames.pop()
+    pub fn pop(&mut self) -> StackFrame {
+        self.frames.pop().unwrap()
     }
 }

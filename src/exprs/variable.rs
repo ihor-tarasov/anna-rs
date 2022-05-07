@@ -1,6 +1,6 @@
-use crate::{lexer::TokenInfo, State};
+use crate::lexer::TokenInfo;
 
-use super::{result::variable_not_exist, Expression, ExpressionResult};
+use super::{result, EvalArgs, Expression, ExpressionResult};
 
 pub struct VariableExpression {
     name: String,
@@ -12,16 +12,11 @@ impl VariableExpression {
         Expression::Variable(Self { name, info })
     }
 
-    pub fn eval(&self, state: &State) -> ExpressionResult {
-        if let Some(frame) = state.stack().frame() {
-            if let Some(value) = frame.get(&self.name) {
-                return Ok(value.clone());
-            }
-        }
-        if let Some(value) = state.global().borrow().frame().get(&self.name) {
-            Ok(value.clone())
+    pub fn eval(&self, args: &EvalArgs) -> ExpressionResult {
+        if let Some(value) = args.state.stack().frame().get(&self.name) {
+            return Ok(value.clone());
         } else {
-            variable_not_exist(self.info.clone())
+            result::variable_not_exist(self.info.clone())
         }
     }
 }

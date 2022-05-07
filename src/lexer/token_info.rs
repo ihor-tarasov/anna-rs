@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct TokenInfo {
     begin: usize,
     length: usize,

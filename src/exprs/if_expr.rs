@@ -1,6 +1,8 @@
-use crate::{lexer::TokenInfo, types::Value, State};
+use crate::{lexer::TokenInfo, types::Value};
 
-use super::{BlockExpression, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
+use super::{
+    BlockExpression, EvalArgs, Expression, ExpressionError, ExpressionErrorType, ExpressionResult,
+};
 
 pub struct IfExpression {
     conditions: Vec<Expression>,
@@ -24,10 +26,10 @@ impl IfExpression {
         })
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
         let mut result = Value::Void;
         for (i, expr) in self.conditions.iter().enumerate() {
-            match super::eval(expr, state)? {
+            match super::eval(expr, args)? {
                 Value::Boolean(value) => {
                     if !value {
                         continue;
@@ -40,10 +42,10 @@ impl IfExpression {
                     ))
                 }
             }
-            result = self.blocks.get(i).unwrap().eval(state)?;
+            result = self.blocks.get(i).unwrap().eval(args)?;
         }
         if let Some(else_block) = &self.else_block {
-            result = else_block.eval(state)?;
+            result = else_block.eval(args)?;
         }
         Ok(result)
     }

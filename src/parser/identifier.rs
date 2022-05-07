@@ -1,18 +1,18 @@
 use crate::{
     exprs::{AssignExpression, VariableExpression},
     lexer::{Lexer, TokenInfo, TokenType},
-    State,
+    Functions,
 };
 
-use super::{call, index, parse_expression, ParserResult};
+use super::{call, index, parse_expression, ParserResult, unexpected_eof, unexpected};
 
-pub fn parse(lexer: &mut Lexer, state: &mut State, name: String, info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions, name: String, info: TokenInfo) -> ParserResult {
     if let Some(token) = lexer.peek() {
         match token.ttype() {
             TokenType::Equal => {
                 lexer.next();
                 return Ok(AssignExpression::new(
-                    parse_expression(lexer, state)?,
+                    parse_expression(lexer, functions)?,
                     name,
                     info,
                 ));
@@ -21,7 +21,7 @@ pub fn parse(lexer: &mut Lexer, state: &mut State, name: String, info: TokenInfo
                 lexer.next();
                 return index::parse(
                     lexer,
-                    state,
+                    functions,
                     VariableExpression::new(name, info.clone()),
                     info,
                 );
@@ -30,10 +30,30 @@ pub fn parse(lexer: &mut Lexer, state: &mut State, name: String, info: TokenInfo
                 lexer.next();
                 return call::parse(
                     lexer,
-                    state,
+                    functions,
                     VariableExpression::new(name, info.clone()),
                     info,
+                    false,
                 );
+            }
+            TokenType::Exclamation => {
+                lexer.next();
+                match lexer.peek() {
+                    Some(token) => match token.ttype() {
+                        TokenType::LeftParenthesis => {
+                            lexer.next();
+                            return call::parse(
+                                lexer,
+                                functions,
+                                VariableExpression::new(name, info.clone()),
+                                info,
+                                true,
+                            );
+                        },
+                        _ => return unexpected(token.info())
+                    },
+                    None => return unexpected_eof(),
+                }
             }
             _ => (),
         }

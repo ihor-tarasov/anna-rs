@@ -15,6 +15,7 @@ pub enum ExpressionErrorType {
     InvalidArgumentCount,
 }
 
+#[derive(Debug)]
 pub struct ExpressionError {
     etype: ExpressionErrorType,
     info: TokenInfo,

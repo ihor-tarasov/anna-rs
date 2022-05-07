@@ -1,13 +1,12 @@
 use crate::{
     lexer::TokenInfo,
     types::{Object, Value},
-    State,
 };
 
 use super::{
     eval,
     result::{expect_indexable_object, index_out_of_bounds, invalid_index},
-    Expression, ExpressionResult,
+    EvalArgs, Expression, ExpressionResult,
 };
 
 pub struct IndexExpression {
@@ -21,15 +20,14 @@ impl IndexExpression {
         Expression::Index(Box::new(Self { from, index, info }))
     }
 
-    pub fn eval(&self, state: &mut State) -> ExpressionResult {
-        let from = eval(&self.from, state)?;
-        let index = eval(&self.index, state)?;
+    pub fn eval(&self, args: &mut EvalArgs) -> ExpressionResult {
+        let from = eval(&self.from, args)?;
+        let index = eval(&self.index, args)?;
 
-        let global = state.global();
-        let global_b = global.borrow();
+        let guard = args.storage.lock().unwrap();
 
         let object = match from {
-            Value::ObjectId(id) => global_b.storage().get(id),
+            Value::ObjectId(id) => guard.get(id),
             _ => return expect_indexable_object(self.info.clone()),
         };
 
@@ -49,14 +47,14 @@ impl IndexExpression {
                 } else {
                     index_out_of_bounds(self.info.clone())
                 }
-            },
+            }
             Object::Array(array) => {
                 if let Some(value) = array.get(index as usize) {
                     Ok(value.clone())
                 } else {
                     index_out_of_bounds(self.info.clone())
                 }
-            },
+            }
             _ => expect_indexable_object(self.info.clone()),
         }
     }

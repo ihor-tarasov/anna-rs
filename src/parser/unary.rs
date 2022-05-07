@@ -1,18 +1,18 @@
 use crate::{
     exprs::{Expression, UnaryExpression},
     lexer::{Lexer, TokenType},
-    State,
+    Functions,
 };
 
 use super::{primary, unexpected_eof, ParserResult};
 
-pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, functions: &mut Functions) -> ParserResult {
     if let Some(token) = lexer.peek() {
         match token.ttype() {
             TokenType::Minus => {
                 let info = token.info();
                 lexer.next();
-                let expr = primary::parse(lexer, state)?;
+                let expr = primary::parse(lexer, functions)?;
                 Ok(Expression::UnaryMinus(Box::new(UnaryExpression::new(
                     expr, info,
                 ))))
@@ -20,12 +20,12 @@ pub fn parse(lexer: &mut Lexer, state: &mut State) -> ParserResult {
             TokenType::Exclamation => {
                 let info = token.info();
                 lexer.next();
-                let expr = primary::parse(lexer, state)?;
+                let expr = primary::parse(lexer, functions)?;
                 Ok(Expression::UnaryNot(Box::new(UnaryExpression::new(
                     expr, info,
                 ))))
             }
-            _ => primary::parse(lexer, state),
+            _ => primary::parse(lexer, functions),
         }
     } else {
         unexpected_eof()
