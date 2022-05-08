@@ -6,6 +6,12 @@ use crate::{
 use super::{call, index, ParserResult, result, Parser};
 
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser, name: String, info: TokenInfo) -> ParserResult {
+    if !parser.stack_mut().last_mut().unwrap().contains(&name) {
+        if !parser.stack_mut().last_mut().unwrap().push_closure(name.clone()) {
+            return result::already_exist(info);
+        }
+    }
+
     if let Some(token) = lexer.peek() {
         match token.ttype() {
             TokenType::Equal => {
@@ -34,25 +40,6 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, name: String, info: TokenIn
                     info,
                     false,
                 );
-            }
-            TokenType::Exclamation => {
-                lexer.next();
-                match lexer.peek() {
-                    Some(token) => match token.ttype() {
-                        TokenType::LeftParenthesis => {
-                            lexer.next();
-                            return call::parse(
-                                lexer,
-                                parser,
-                                VariableExpression::new(name, info.clone()),
-                                info,
-                                true,
-                            );
-                        },
-                        _ => return result::unexpected(token.info())
-                    },
-                    None => return result::unexpected_eof(),
-                }
             }
             _ => (),
         }

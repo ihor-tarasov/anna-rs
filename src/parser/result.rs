@@ -7,6 +7,7 @@ pub enum ParserErrorType {
     UnexpectedEndOfFile,
     Empty,
     ArgumentAlreadyExist,
+    VariableAlreadyExist,
 }
 
 pub struct ParserError {
@@ -43,4 +44,8 @@ pub fn unexpected_eof() -> ParserResult {
 
 pub fn unknown(info: TokenInfo) -> ParserResult {
     Err(ParserError::new(ParserErrorType::UnknownCharacter, info))
+}
+
+pub fn already_exist(info: TokenInfo) -> ParserResult {
+    Err(ParserError::new(ParserErrorType::VariableAlreadyExist, info))
 }

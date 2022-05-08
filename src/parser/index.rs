@@ -40,25 +40,6 @@ pub fn parse(
                     false,
                 );
             }
-            TokenType::Exclamation => {
-                lexer.next();
-                match lexer.peek() {
-                    Some(token) => match token.ttype() {
-                        TokenType::LeftParenthesis => {
-                            lexer.next();
-                            return call::parse(
-                                lexer,
-                                parser,
-                                IndexExpression::new(from, index, info.clone()),
-                                info,
-                                true,
-                            );
-                        },
-                        _ => return result::unexpected(token.info())
-                    },
-                    None => return result::unexpected_eof(),
-                }
-            }
             _ => (),
         }
     }

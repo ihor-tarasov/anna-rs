@@ -1,12 +1,14 @@
 use std::{collections::HashMap, sync::Arc};
 
 use crate::{
+    functions::FunctionsRc,
     lexer::TokenInfo,
+    state::StorageRc,
     types::{Object, Value},
-    State, functions::FunctionsRc,
+    State,
 };
 
-use super::{Expression, ExpressionError, ExpressionErrorType, ExpressionResult, EvalArgs};
+use super::{EvalArgs, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
 
 pub struct CallExpression {
     from: Expression,
@@ -15,23 +17,31 @@ pub struct CallExpression {
     info: TokenInfo,
 }
 
-fn call_native_sync(functions: FunctionsRc, id: usize, params: Vec<Value>) -> Value {
-    functions.native(id)(params)
+fn call_native_sync(
+    functions: FunctionsRc,
+    storage: StorageRc,
+    id: usize,
+    params: Vec<Value>,
+) -> Value {
+    functions.native(id)(storage, params)
 }
 
 fn call_native(args: &EvalArgs, id: usize, params: Vec<Value>, is_async: bool) -> Value {
     if is_async {
         let jh = std::thread::spawn({
             let functions = Arc::clone(&args.functions);
-            move || call_native_sync(functions, id, params)
+            let storage = Arc::clone(&args.storage);
+            move || call_native_sync(functions, storage, id, params)
         });
 
-        args.storage
-            .lock()
-            .unwrap()
-            .push(Object::Thread(jh))
+        args.storage.lock().unwrap().push(Object::Thread(Some(jh)))
     } else {
-        call_native_sync(Arc::clone(&args.functions), id, params)
+        call_native_sync(
+            Arc::clone(&args.functions),
+            Arc::clone(&args.storage),
+            id,
+            params,
+        )
     }
 }
 
@@ -49,7 +59,11 @@ fn call_closure(
             move || {
                 let mut state = State::new();
                 let functions2 = Arc::clone(&functions);
-                let mut eval_args = EvalArgs { state: &mut state, storage, functions };
+                let mut eval_args = EvalArgs {
+                    state: &mut state,
+                    storage,
+                    functions,
+                };
 
                 functions2
                     .function(id)
@@ -58,15 +72,10 @@ fn call_closure(
             }
         });
 
-        Ok(args.storage
-            .lock()
-            .unwrap()
-            .push(Object::Thread(jh)))
+        Ok(args.storage.lock().unwrap().push(Object::Thread(Some(jh))))
     } else {
         let functions = Arc::clone(&args.functions);
-        functions
-            .function(id)
-            .call(args, params, closure)
+        functions.function(id).call(args, params, closure)
     }
 }
 
@@ -102,9 +111,7 @@ impl CallExpression {
         }
 
         match from {
-            Value::NativeFunctionId(id) => {
-                Ok(call_native(args, id, params, self.is_async))
-            }
+            Value::NativeFunctionId(id) => Ok(call_native(args, id, params, self.is_async)),
             Value::ObjectId(id) => {
                 let closure = match args.storage.lock().unwrap().get(id) {
                     Object::Closure((id, closure)) => (*id, closure.clone()),

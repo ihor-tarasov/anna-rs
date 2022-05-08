@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use crate::{types::Value, Function, State};
+use crate::{types::Value, Function, State, state::StorageRc};
 
-pub type NativeFunctionCallback = dyn Fn(Vec<Value>) -> Value + Send + Sync;
+pub type NativeFunctionCallback = dyn Fn(StorageRc, Vec<Value>) -> Value + Send + Sync;
 pub type NativeFunctionCallbackBox = Box<NativeFunctionCallback>;
 
 pub struct Functions {
@@ -14,7 +14,7 @@ pub type FunctionsRc = Arc<Functions>;
 
 pub fn native<F>(state: &mut State, functions: &mut Functions, name: String, f: F) -> bool
 where
-    F: Fn(Vec<Value>) -> Value + 'static + Send + Sync,
+    F: Fn(StorageRc, Vec<Value>) -> Value + 'static + Send + Sync,
 {
     let value = Value::NativeFunctionId(functions.push_native(Box::new(f)));
     state.stack_mut().frame_mut().var(name, value)

@@ -18,6 +18,10 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
         _ => return result::unexpected(info),
     };
 
+    if !parser.stack_mut().last_mut().unwrap().push_variable(name.clone()) {
+        return result::already_exist(info);
+    }
+
     match lexer.next() {
         Some(token) => match token.ttype() {
             TokenType::Equal => (),

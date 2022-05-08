@@ -6,5 +6,5 @@ pub enum Object {
     String(String),
     Array(Vec<Value>),
     Closure((usize, HashMap<String, Value>)),
-    Thread(JoinHandle<Value>),
+    Thread(Option<JoinHandle<Value>>),
 }

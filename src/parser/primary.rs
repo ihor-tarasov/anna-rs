@@ -6,10 +6,19 @@ use crate::{
 
 use super::{
     array, caching, function, identifier, if_parser, var,
-    while_parser, ParserResult, result, Parser,
+    while_parser, ParserResult, result, Parser, block,
 };
 
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
+    if let Some(token) = lexer.peek() {
+        match token.ttype() {
+            TokenType::LeftBrace => {
+                return block::parse(lexer, parser);
+            }
+            _ => (),
+        }
+    }
+
     let token = match lexer.next() {
         Some(token) => token,
         None => return result::unexpected_eof(),

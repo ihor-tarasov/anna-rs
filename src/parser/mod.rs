@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     lexer::{Lexer, TokenInfo},
     Functions,
@@ -26,14 +28,59 @@ pub use result::ParserError;
 pub use result::ParserErrorType;
 pub use result::ParserResult;
 
+type ParserBlock = HashSet<String>;
+
+pub struct ParserFrame {
+    variables: Vec<ParserBlock>,
+    closure: HashSet<String>,
+}
+
+impl ParserFrame {
+    pub fn new() -> Self {
+        Self {
+            variables: Vec::new(),
+            closure: HashSet::new(),
+        }
+    }
+
+    pub fn push_block(&mut self) {
+        self.variables.push(HashSet::new());
+    }
+
+    pub fn pop_block(&mut self) {
+        self.variables.pop().unwrap();
+    }
+
+    pub fn push_variable(&mut self, name: String) -> bool {
+        self.variables.last_mut().unwrap().insert(name)
+    }
+
+    pub fn contains(&self, name: &String) -> bool {
+        for block in self.variables.iter().rev() {
+            if block.contains(name) {
+                return true;
+            }
+        }
+        false
+    }
+
+    pub fn push_closure(&mut self, name: String) -> bool {
+        self.closure.insert(name)
+    }
+}
+
+pub type ParserStack = Vec<ParserFrame>;
+
 pub struct Parser<'a> {
     functions: &'a mut Functions,
+    stack: &'a mut ParserStack,
 }
 
 impl<'a> Parser<'a> {
-    pub fn new(functions: &'a mut Functions) -> Self {
+    pub fn new(functions: &'a mut Functions, stack: &'a mut ParserStack) -> Self {
         Self {
             functions,
+            stack,
         }
     }
 
@@ -43,6 +90,14 @@ impl<'a> Parser<'a> {
 
     pub fn functions_mut(&mut self) -> &mut Functions {
         self.functions
+    }
+
+    pub fn stack(&self) -> &ParserStack {
+        &self.stack
+    }
+
+    pub fn stack_mut(&mut self) -> &mut ParserStack {
+        &mut self.stack
     }
 }
 
