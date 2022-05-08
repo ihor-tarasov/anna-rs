@@ -1,27 +1,29 @@
-use crate::{State, types::{Value, Object}, debug, native, Functions, parser::ParserStack};
+use std::sync::Arc;
 
-fn print_value(args: Vec<Value>) {
+use crate::{State, types::{Value, Object}, debug, native, Functions, parser::ParserStack, state::StorageRc};
+
+fn print_value(args: Vec<Value>, storage: StorageRc) {
     let mut it = args.iter();
 
     if let Some(value) = it.next() {
-        debug::print_value(value.clone());
+        debug::print_value(value.clone(), Arc::clone(&storage));
         while let Some(value) = it.next() {
             print!(", ");
-            debug::print_value(value.clone());
+            debug::print_value(value.clone(), Arc::clone(&storage));
         }
     }
 }
 
 pub fn register(state: &mut State, stack: &mut ParserStack, functions: &mut Functions) {
     stack.last_mut().unwrap().push_variable("print".to_string());
-    native(state, functions, "print".to_string(),  |_storage, args| {
-        print_value(args);
+    native(state, functions, "print".to_string(),  |storage, args| {
+        print_value(args, storage);
         Value::Void
     });
 
     stack.last_mut().unwrap().push_variable("println".to_string());
-    native(state, functions, "println".to_string(), |_storage, args| {
-        print_value(args);
+    native(state, functions, "println".to_string(), |storage, args| {
+        print_value(args, storage);
         println!();
         Value::Void
     });

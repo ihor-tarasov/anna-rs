@@ -1,5 +1,5 @@
 use crate::{
-    exprs::LiteralExpression,
+    exprs::{LiteralExpression, StringLiteralExpression},
     lexer::{Lexer, TokenType},
     types::Value,
 };
@@ -36,6 +36,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
         TokenType::Return => caching::parse(lexer, parser, Value::Return),
         TokenType::Continue => Ok(LiteralExpression::new(Value::Continue)),
         TokenType::VerticalBar => function::parse(lexer, parser, info),
+        TokenType::String(value) => Ok(StringLiteralExpression::new(value)),
         TokenType::Unknown => result::unknown(info),
         _ => result::unexpected(info),
     }

@@ -38,5 +38,6 @@ pub use if_expr::IfExpression;
 pub use while_expr::WhileExpression;
 pub use closure::ClosureExpression;
 pub use eval::EvalArgs;
+pub use literal::StringLiteralExpression;
 
 pub use eval::eval;

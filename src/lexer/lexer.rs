@@ -1,4 +1,4 @@
-use super::{double, identifier, number, reader::Reader, single, Token, TokenInfo};
+use super::{double, identifier, number, reader::Reader, single, Token, TokenInfo, string};
 
 fn lex(reader: &mut Reader) -> Option<Token> {
     let mut c = reader.peek()?;
@@ -19,6 +19,10 @@ fn lex(reader: &mut Reader) -> Option<Token> {
             Some(token) => return Some(token),
             None => (),
         }
+    }
+
+    if c == b'"' {
+        return Some(string::lex(reader));
     }
 
     c = reader.next()?;

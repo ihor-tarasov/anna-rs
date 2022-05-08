@@ -42,5 +42,6 @@ pub fn eval(
         Expression::If(if_expr) => if_expr.eval(args),
         Expression::While(while_expr) => while_expr.eval(args),
         Expression::Closure(function) => function.eval(args),
+        Expression::StringLiteral(string_literal) => string_literal.eval(args),
     }
 }

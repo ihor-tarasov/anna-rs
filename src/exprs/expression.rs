@@ -13,7 +13,7 @@ use crate::opers::{
 
 use super::{
     assign::AssignExpression, block::BlockExpression, index::IndexExpression,
-    literal::LiteralExpression, var::VarExpression, variable::VariableExpression, ArrayExpression,
+    literal::{LiteralExpression, StringLiteralExpression}, var::VarExpression, variable::VariableExpression, ArrayExpression,
     BinaryExpression, CachingExpression, CallExpression, ClosureExpression, IfExpression,
     UnaryExpression, WhileExpression,
 };
@@ -48,4 +48,5 @@ pub enum Expression {
     If(IfExpression),
     While(Box<WhileExpression>),
     Closure(ClosureExpression),
+    StringLiteral(StringLiteralExpression),
 }

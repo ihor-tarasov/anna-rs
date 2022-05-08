@@ -1,4 +1,4 @@
-use crate::{lexer::TokenInfo, types::Value};
+use crate::{lexer::TokenInfo, types::{Value, Object}, state::StorageRc};
 
 pub fn print_info(code: &[u8], info: TokenInfo) {
     let (line, offset) = code
@@ -24,7 +24,7 @@ pub fn print_info(code: &[u8], info: TokenInfo) {
     println!();
 }
 
-pub fn print_value(value: Value) {
+pub fn print_value(value: Value, storage: StorageRc) {
     match value {
         Value::Void => print!("#void"),
         Value::Break => print!("#break"),
@@ -33,12 +33,15 @@ pub fn print_value(value: Value) {
         Value::Boolean(value) => print!("{}", value),
         Value::Integer(value) => print!("{}", value),
         Value::Real(value) => print!("{}", value),
-        Value::ObjectId(value) => print!("#[{}]", value),
+        Value::ObjectId(value) => match storage.lock().unwrap().get(value) {
+            Object::String(string) => print!("{}", string),
+            _ => print!("#[{}]", value),
+        },
         Value::NativeFunctionId(value) => print!("#NFN[{}]", value),
     }
 }
 
-pub fn println_value(value: Value) {
-    print_value(value);
+pub fn println_value(value: Value, storage: StorageRc) {
+    print_value(value, storage);
     println!();
 }

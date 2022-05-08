@@ -41,13 +41,13 @@ fn read_file(path: String) {
             let functions = Arc::clone(&functions);
             let mut eval_args = EvalArgs {
                 state: &mut state,
-                storage: storage.clone(),
+                storage: Arc::clone(&storage),
                 functions,
             };
             match exprs::eval(&expression, &mut eval_args) {
                 Ok(value) => match value {
                     Value::Void => (),
-                    _ => debug::println_value(value),
+                    _ => debug::println_value(value, storage),
                 },
                 Err(error) => {
                     debug::print_info(code.as_bytes(), error.info());
@@ -108,13 +108,13 @@ fn main() {
                     let functions = Arc::clone(&functions);
                     let mut eval_args = EvalArgs {
                         state: &mut state,
-                        storage: storage.clone(),
+                        storage: Arc::clone(&storage),
                         functions,
                     };
                     match exprs::eval(&expression, &mut eval_args) {
                         Ok(value) => match value {
                             Value::Void => (),
-                            _ => debug::println_value(value),
+                            _ => debug::println_value(value, Arc::clone(&storage)),
                         },
                         Err(error) => {
                             debug::print_info(code.as_bytes(), error.info());

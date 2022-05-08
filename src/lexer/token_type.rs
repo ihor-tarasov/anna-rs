@@ -2,6 +2,7 @@ pub enum TokenType {
     Integer(i64),
     Real(f64),
     Identifier(String),
+    String(String),
     Plus,               // +
     Minus,              // -
     Asterisk,           // *
@@ -35,4 +36,5 @@ pub enum TokenType {
     Else,
     While,
     Unknown,
+    InvalidString,
 }
