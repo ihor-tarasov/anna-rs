@@ -15,6 +15,26 @@ pub struct IndexExpression {
     info: TokenInfo,
 }
 
+pub fn get_by_index(object: &Object, index: usize, info: &TokenInfo) -> ExpressionResult {
+    match object {
+        Object::String(string) => {
+            if let Some(c) = string.chars().nth(index as usize) {
+                Ok(Value::Integer(c as i64))
+            } else {
+                index_out_of_bounds(info.clone())
+            }
+        }
+        Object::Array(array) => {
+            if let Some(value) = array.get(index as usize) {
+                Ok(value.clone())
+            } else {
+                index_out_of_bounds(info.clone())
+            }
+        }
+        _ => expect_indexable_object(info.clone()),
+    }
+}
+
 impl IndexExpression {
     pub fn new(from: Expression, index: Expression, info: TokenInfo) -> Expression {
         Expression::Index(Box::new(Self { from, index, info }))
@@ -40,22 +60,6 @@ impl IndexExpression {
             return invalid_index(self.info.clone());
         }
 
-        match object {
-            Object::String(string) => {
-                if let Some(c) = string.chars().nth(index as usize) {
-                    Ok(Value::Integer(c as i64))
-                } else {
-                    index_out_of_bounds(self.info.clone())
-                }
-            }
-            Object::Array(array) => {
-                if let Some(value) = array.get(index as usize) {
-                    Ok(value.clone())
-                } else {
-                    index_out_of_bounds(self.info.clone())
-                }
-            }
-            _ => expect_indexable_object(self.info.clone()),
-        }
+        get_by_index(object, index as usize, &self.info)
     }
 }

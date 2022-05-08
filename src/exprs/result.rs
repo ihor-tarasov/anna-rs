@@ -13,6 +13,7 @@ pub enum ExpressionErrorType {
     NotCallableObject,
     ExpectedBoolForConditions,
     InvalidArgumentCount,
+    NotInterable,
 }
 
 #[derive(Debug)]
@@ -51,4 +52,8 @@ pub fn expect_indexable_object(info: TokenInfo) -> ExpressionResult {
 
 pub fn index_out_of_bounds(info: TokenInfo) -> ExpressionResult {
     Err(ExpressionError::new(ExpressionErrorType::IndexOutOfBounds, info))
+}
+
+pub fn not_iterable(info: TokenInfo) -> ExpressionResult {
+    Err(ExpressionError::new(ExpressionErrorType::NotInterable, info))
 }

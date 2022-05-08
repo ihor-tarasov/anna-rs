@@ -2,7 +2,7 @@ use crate::{lexer::{Lexer, TokenType}, exprs::BlockExpression};
 
 use super::{ParserResult, result, Parser};
 
-struct BlockGuard<'a, 'b> {
+pub struct BlockGuard<'a, 'b> {
     parser: &'a mut Parser<'b>,
 }
 

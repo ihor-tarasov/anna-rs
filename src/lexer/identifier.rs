@@ -24,6 +24,8 @@ pub fn lex(reader: &mut Reader) -> Option<Token> {
         "if" => TokenType::If,
         "else" => TokenType::Else,
         "while" => TokenType::While,
+        "for" => TokenType::For,
+        "in" => TokenType::In,
         _ => TokenType::Identifier(accumulator),
     };
 

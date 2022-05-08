@@ -3,14 +3,8 @@ use std::sync::Arc;
 use crate::{State, types::{Value, Object}, debug, native, Functions, parser::ParserStack, state::StorageRc};
 
 fn print_value(args: Vec<Value>, storage: StorageRc) {
-    let mut it = args.iter();
-
-    if let Some(value) = it.next() {
-        debug::print_value(value.clone(), Arc::clone(&storage));
-        while let Some(value) = it.next() {
-            print!(", ");
-            debug::print_value(value.clone(), Arc::clone(&storage));
-        }
+    for arg in args {
+        debug::print_value(arg, Arc::clone(&storage));
     }
 }
 

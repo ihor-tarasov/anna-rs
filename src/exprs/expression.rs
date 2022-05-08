@@ -15,7 +15,7 @@ use super::{
     assign::AssignExpression, block::BlockExpression, index::IndexExpression,
     literal::{LiteralExpression, StringLiteralExpression}, var::VarExpression, variable::VariableExpression, ArrayExpression,
     BinaryExpression, CachingExpression, CallExpression, ClosureExpression, IfExpression,
-    UnaryExpression, WhileExpression,
+    UnaryExpression, WhileExpression, ForExpression,
 };
 
 pub enum Expression {
@@ -49,4 +49,5 @@ pub enum Expression {
     While(Box<WhileExpression>),
     Closure(ClosureExpression),
     StringLiteral(StringLiteralExpression),
+    For(Box<ForExpression>),
 }

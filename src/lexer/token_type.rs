@@ -28,6 +28,8 @@ pub enum TokenType {
     LeftBrace,          // {
     RightBrace,         // }
     Semicolon,          // ;
+    For,
+    In,
     Var,
     Break,
     Continue,

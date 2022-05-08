@@ -20,6 +20,7 @@ mod block;
 mod if_expr;
 mod while_expr;
 mod closure;
+mod for_expr;
 
 pub use expression::Expression;
 
@@ -39,5 +40,6 @@ pub use while_expr::WhileExpression;
 pub use closure::ClosureExpression;
 pub use eval::EvalArgs;
 pub use literal::StringLiteralExpression;
+pub use for_expr::ForExpression;
 
 pub use eval::eval;

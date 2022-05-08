@@ -6,7 +6,7 @@ use crate::{
 
 use super::{
     array, caching, function, identifier, if_parser, var,
-    while_parser, ParserResult, result, Parser, block,
+    while_parser, ParserResult, result, Parser, block, for_parser,
 };
 
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
@@ -37,6 +37,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
         TokenType::Continue => Ok(LiteralExpression::new(Value::Continue)),
         TokenType::VerticalBar => function::parse(lexer, parser, info),
         TokenType::String(value) => Ok(StringLiteralExpression::new(value)),
+        TokenType::For => for_parser::parse(lexer, parser, info),
         TokenType::Unknown => result::unknown(info),
         _ => result::unexpected(info),
     }

@@ -23,6 +23,7 @@ mod term;
 mod unary;
 mod var;
 mod while_parser;
+mod for_parser;
 
 pub use result::ParserError;
 pub use result::ParserErrorType;

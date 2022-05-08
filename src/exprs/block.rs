@@ -6,7 +6,7 @@ pub struct BlockExpression {
     stats: Vec<Expression>,
 }
 
-struct BlockGuard<'a, 'b> {
+pub struct BlockGuard<'a, 'b> {
     args: &'a mut EvalArgs<'b>,
 }
 
@@ -17,6 +17,10 @@ impl<'a, 'b> BlockGuard<'a, 'b> {
     }
 
     pub fn args_mut(&mut self) -> &mut EvalArgs<'b> {
+        self.args
+    }
+
+    pub fn args(&self) -> &EvalArgs<'b> {
         self.args
     }
 }
