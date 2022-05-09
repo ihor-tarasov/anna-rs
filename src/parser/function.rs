@@ -26,13 +26,13 @@ impl<'a, 'b> Drop for FrameGuard<'a, 'b> {
     }
 }
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: bool) -> ParserResult {
     let mut args = HashSet::new();
 
     let mut guard = FrameGuard::new(parser);
 
     loop {
-        if let Some(token) = lexer.next() {
+        if let Some(token) = lexer.next(true) {
             let info = token.info();
             match token.take_type() {
                 TokenType::Identifier(name) => {
@@ -52,7 +52,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserR
             return result::unexpected_eof();
         }
 
-        if let Some(token) = lexer.next() {
+        if let Some(token) = lexer.next(true) {
             let info = token.info();
             match token.take_type() {
                 TokenType::Comma => (),
@@ -64,7 +64,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserR
         }
     }
 
-    let block = match block::parse(lexer, guard.parser_mut())? {
+    let block = match block::parse(lexer, guard.parser_mut(), require)? {
         Expression::Block(block) => block,
         _ => panic!("Expected BlockExpression"),
     };

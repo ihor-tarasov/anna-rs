@@ -1,23 +1,22 @@
 use crate::{lexer::TokenInfo, types::{Value, Object}, state::StorageRc};
 
-pub fn print_info(code: &[u8], info: TokenInfo) {
+pub fn print_info(code: &str, info: TokenInfo) {
     let (line, offset) = code
-        .iter()
+        .chars()
         .enumerate()
         .take_while(|(index, _)| *index != info.begin())
         .fold((0usize, 0usize), |(line, offset), (index, element)| {
-            if *element == b'\n' {
+            if element == '\n' {
                 (line + 1, index + 1)
             } else {
                 (line, offset)
             }
         });
     println!("In line: {}", line + 1);
-    code.iter()
+    code.chars()
         .skip(offset)
-        .cloned()
-        .take_while(|e| *e != b'\r' && *e != b'\n')
-        .for_each(|e| print!("{}", e as char));
+        .take_while(|e| *e != '\r' && *e != '\n')
+        .for_each(|e| print!("{}", e));
     println!();
     (offset..info.begin()).for_each(|_| print!(" "));
     (0..info.length()).for_each(|_| print!("^"));

@@ -5,8 +5,8 @@ use crate::{
 
 use super::{result, ParserResult, Parser};
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
-    let token = match lexer.next() {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserResult {
+    let token = match lexer.next(true) {
         Some(token) => token,
         None => return result::unexpected_eof(),
     };
@@ -22,7 +22,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
         return result::already_exist(info);
     }
 
-    match lexer.next() {
+    match lexer.next(true) {
         Some(token) => match token.ttype() {
             TokenType::Equal => (),
             _ => return result::unexpected(token.info()),
@@ -30,7 +30,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
         None => return result::unexpected_eof(),
     }
 
-    let expr = super::parse_expression(lexer, parser)?;
+    let expr = super::parse_expression(lexer, parser, require)?;
 
     Ok(VarExpression::new(expr, name, info))
 }

@@ -1,13 +1,13 @@
 use super::TokenType;
 
-pub fn lex(c1: u8, c2: u8) -> Option<TokenType> {
+pub fn lex(c1: char, c2: char) -> Option<TokenType> {
     match (c1, c2) {
-        (b'=', b'=') => Some(TokenType::EqualEqual),
-        (b'!', b'=') => Some(TokenType::ExclamationEqual),
-        (b'>', b'=') => Some(TokenType::GreaterEqual),
-        (b'<', b'=') => Some(TokenType::LessEqual),
-        (b'<', b'<') => Some(TokenType::LessLess),
-        (b'>', b'>') => Some(TokenType::GreaterGreater),
+        ('=', '=') => Some(TokenType::EqualEqual),
+        ('!', '=') => Some(TokenType::ExclamationEqual),
+        ('>', '=') => Some(TokenType::GreaterEqual),
+        ('<', '=') => Some(TokenType::LessEqual),
+        ('<', '<') => Some(TokenType::LessLess),
+        ('>', '>') => Some(TokenType::GreaterGreater),
         _ => None,
     }
 }

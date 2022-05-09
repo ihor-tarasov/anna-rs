@@ -102,13 +102,13 @@ impl<'a> Parser<'a> {
     }
 }
 
-pub fn parse_expression(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
-    equality::parse(lexer, parser)
+pub fn parse_expression(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserResult {
+    equality::parse(lexer, parser, require)
 }
 
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
-    let result = match lexer.peek() {
-        Some(_) => parse_expression(lexer, parser)?,
+    let result = match lexer.peek(false) {
+        Some(_) => parse_expression(lexer, parser, false)?,
         None => {
             return Err(ParserError::new(
                 ParserErrorType::Empty,
@@ -116,7 +116,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
             ))
         }
     };
-    if let Some(token) = lexer.peek() {
+    if let Some(token) = lexer.next(false) {
         result::unexpected(token.info())
     } else {
         Ok(result)

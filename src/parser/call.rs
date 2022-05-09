@@ -10,15 +10,15 @@ pub fn parse(
     parser: &mut Parser,
     from: Expression,
     info: TokenInfo,
-    is_async: bool,
+    require: bool,
 ) -> ParserResult {
     let mut exprs = Vec::new();
 
-    match lexer.peek() {
+    match lexer.peek(true) {
         Some(token) => match token.ttype() {
             TokenType::RightParenthesis => {
-                lexer.next();
-                return Ok(CallExpression::new(from, exprs, is_async, info));
+                lexer.next(true);
+                return Ok(CallExpression::new(from, exprs, info));
             }
             _ => (),
         },
@@ -26,16 +26,16 @@ pub fn parse(
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer, parser)?);
+        exprs.push(super::parse_expression(lexer, parser, true)?);
 
-        match lexer.peek() {
+        match lexer.peek(true) {
             Some(token) => match token.ttype() {
                 TokenType::RightParenthesis => {
-                    lexer.next();
+                    lexer.next(true);
                     break;
                 }
                 TokenType::Comma => {
-                    lexer.next();
+                    lexer.next(true);
                 }
                 _ => return result::unexpected(token.info()),
             },
@@ -43,20 +43,21 @@ pub fn parse(
         }
     }
 
-    if let Some(token) = lexer.peek() {
+    if let Some(token) = lexer.peek(require) {
         match token.ttype() {
             TokenType::LeftSquareBracket => {
-                lexer.next();
+                lexer.next(true);
                 return index::parse(
                     lexer,
                     parser,
-                    CallExpression::new(from, exprs, is_async, info.clone()),
+                    CallExpression::new(from, exprs, info.clone()),
                     info,
+                    require,
                 );
             }
             _ => (),
         }
     }
 
-    Ok(CallExpression::new(from, exprs, is_async, info))
+    Ok(CallExpression::new(from, exprs, info))
 }

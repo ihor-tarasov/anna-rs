@@ -10,10 +10,10 @@ use super::{
     Parser, ParserResult,
 };
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: bool) -> ParserResult {
     let mut guard = BlockGuard::new(parser);
 
-    let variable = if let Some(token) = lexer.next() {
+    let variable = if let Some(token) = lexer.next(true) {
         let info = token.info();
         match token.take_type() {
             TokenType::Identifier(name) => name,
@@ -33,7 +33,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserR
         return result::already_exist(info);
     }
 
-    if let Some(token) = lexer.next() {
+    if let Some(token) = lexer.next(true) {
         let info = token.info();
         match token.take_type() {
             TokenType::In => (),
@@ -43,9 +43,9 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserR
         return unexpected_eof();
     }
 
-    let condition = parse_expression(lexer, guard.parser_mut())?;
+    let condition = parse_expression(lexer, guard.parser_mut(), true)?;
 
-    let block = match block::parse(lexer, guard.parser_mut())? {
+    let block = match block::parse(lexer, guard.parser_mut(), require)? {
         Expression::Block(block) => block,
         _ => panic!("Expected block"),
     };

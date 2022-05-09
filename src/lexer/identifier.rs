@@ -1,15 +1,15 @@
 use super::{reader::Reader, Token, TokenType, TokenInfo};
 
-pub fn lex(reader: &mut Reader) -> Option<Token> {
+pub fn lex(reader: &mut Reader, require: bool) -> Option<Token> {
     let mut accumulator = String::new();
     let begin = reader.position();
-    while let Some(c) = reader.peek() {
-        if c.is_ascii_alphanumeric() || c == b'_' {
+    while let Some(c) = reader.peek(require) {
+        if c.is_ascii_alphanumeric() || c == '_' {
             accumulator.push(c as char);
         } else {
             break;
         }
-        reader.next();
+        reader.next(require);
     }
 
     if accumulator.is_empty() { return None }

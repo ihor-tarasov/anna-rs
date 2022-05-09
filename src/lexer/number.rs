@@ -1,19 +1,19 @@
 use super::{reader::Reader, Token, TokenType, TokenInfo};
 
-pub fn lex(reader: &mut Reader) -> Option<Token> {
+pub fn lex(reader: &mut Reader, require: bool) -> Option<Token> {
     let mut accumulator = String::new();
     let mut dot = false;
     let begin = reader.position();
-    while let Some(c) = reader.peek() {
+    while let Some(c) = reader.peek(require) {
         match c {
-            b'0'..=b'9' => accumulator.push(c as char),
-            b'.' => {
+            '0'..='9' => accumulator.push(c as char),
+            '.' => {
                 if dot { break } else { dot = true }
                 accumulator.push('.');
             },
             _ => break,
         }
-        reader.next();
+        reader.next(require);
     }
 
     if accumulator.is_empty() { return None }

@@ -5,7 +5,7 @@ use crate::{
 
 use super::{block, result, ParserResult, Parser};
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, if_info: TokenInfo) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, if_info: TokenInfo, require: bool) -> ParserResult {
     let mut conditions = Vec::new();
     let mut blocks = Vec::new();
     let mut info = Vec::new();
@@ -13,8 +13,8 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, if_info: TokenInfo) -> Pars
     info.push(if_info);
 
     loop {
-        let condition = super::parse_expression(lexer, parser)?;
-        let block = match block::parse(lexer, parser)? {
+        let condition = super::parse_expression(lexer, parser, true)?;
+        let block = match block::parse(lexer, parser, require)? {
             Expression::Block(block) => block,
             _ => panic!("Expected BlockExpression"),
         };
@@ -22,18 +22,18 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, if_info: TokenInfo) -> Pars
         conditions.push(condition);
         blocks.push(block);
 
-        if let Some(token) = lexer.peek() {
+        if let Some(token) = lexer.peek(require) {
             match token.ttype() {
                 TokenType::Else => {
-                    lexer.next();
-                    if let Some(token) = lexer.peek() {
+                    lexer.next(true);
+                    if let Some(token) = lexer.peek(true) {
                         match token.ttype() {
                             TokenType::If => {
                                 info.push(token.info());
-                                lexer.next();
+                                lexer.next(true);
                             }
                             _ => {
-                                else_block = Some(match block::parse(lexer, parser)? {
+                                else_block = Some(match block::parse(lexer, parser, require)? {
                                     Expression::Block(block) => block,
                                     _ => panic!("Expected BlockExpression"),
                                 });

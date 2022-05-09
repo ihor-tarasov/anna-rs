@@ -5,9 +5,9 @@ use crate::{
 
 use super::{block, parse_expression, ParserResult, Parser};
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo) -> ParserResult {
-    let condition = parse_expression(lexer, parser)?;
-    let block = match block::parse(lexer, parser)? {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: bool) -> ParserResult {
+    let condition = parse_expression(lexer, parser, true)?;
+    let block = match block::parse(lexer, parser, require)? {
         Expression::Block(block) => block,
         _ => panic!("Expected block"),
     };

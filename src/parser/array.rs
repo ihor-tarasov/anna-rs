@@ -8,10 +8,10 @@ use super::{ParserResult, result, Parser};
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
     let mut exprs = Vec::new();
 
-    match lexer.peek() {
+    match lexer.peek(true) {
         Some(token) => match token.ttype() {
             TokenType::RightSquareBracket => {
-                lexer.next();
+                lexer.next(true);
                 return Ok(ArrayExpression::new(exprs));
             }
             _ => (),
@@ -20,16 +20,16 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
     }
 
     loop {
-        exprs.push(super::parse_expression(lexer, parser)?);
+        exprs.push(super::parse_expression(lexer, parser, true)?);
 
-        match lexer.peek() {
+        match lexer.peek(true) {
             Some(token) => match token.ttype() {
                 TokenType::RightSquareBracket => {
-                    lexer.next();
+                    lexer.next(true);
                     break;
                 }
                 TokenType::Comma => {
-                    lexer.next();
+                    lexer.next(true);
                 }
                 _ => return result::unexpected(token.info()),
             },

@@ -1,6 +1,9 @@
-use crate::{lexer::{Lexer, TokenType}, exprs::BlockExpression};
+use crate::{
+    exprs::BlockExpression,
+    lexer::{Lexer, TokenType},
+};
 
-use super::{ParserResult, result, Parser};
+use super::{result, Parser, ParserResult};
 
 pub struct BlockGuard<'a, 'b> {
     parser: &'a mut Parser<'b>,
@@ -23,11 +26,11 @@ impl<'a, 'b> Drop for BlockGuard<'a, 'b> {
     }
 }
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
-    let is_multiline = if let Some(token) = lexer.peek() {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserResult {
+    let is_multiline = if let Some(token) = lexer.peek(true) {
         match token.ttype() {
             TokenType::LeftBrace => {
-                lexer.next();
+                lexer.next(true);
                 true
             }
             _ => false,
@@ -40,14 +43,18 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
 
     let mut stats = Vec::new();
 
-    stats.push(super::parse_expression(lexer, guard.parser_mut())?);
+    stats.push(super::parse_expression(
+        lexer,
+        guard.parser_mut(),
+        if is_multiline { true } else { require },
+    )?);
 
     if is_multiline {
         loop {
-            if let Some(token) = lexer.peek() {
+            if let Some(token) = lexer.peek(true) {
                 match token.ttype() {
                     TokenType::Semicolon => {
-                        lexer.next();
+                        lexer.next(true);
                         ()
                     }
                     _ => (),
@@ -56,10 +63,10 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
                 return result::unexpected_eof();
             }
 
-            if let Some(token) = lexer.peek() {
+            if let Some(token) = lexer.peek(true) {
                 match token.ttype() {
                     TokenType::RightBrace => {
-                        lexer.next();
+                        lexer.next(true);
                         break;
                     }
                     _ => (),
@@ -68,7 +75,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
                 return result::unexpected_eof();
             }
 
-            stats.push(super::parse_expression(lexer, guard.parser_mut())?);
+            stats.push(super::parse_expression(lexer, guard.parser_mut(), true)?);
         }
     }
 
