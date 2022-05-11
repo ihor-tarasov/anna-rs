@@ -3,13 +3,21 @@ use crate::{
     lexer::{Lexer, TokenInfo, TokenType},
 };
 
-use super::{call, index, ParserResult, result, Parser};
+use super::{call, index, result, Parser, ParserResult};
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, name: String, info: TokenInfo, require: bool) -> ParserResult {
+pub fn parse(
+    lexer: &mut Lexer,
+    parser: &mut Parser,
+    name: String,
+    info: TokenInfo,
+    require: bool,
+) -> ParserResult {
     if !parser.stack_mut().last_mut().unwrap().contains(&name) {
-        if !parser.stack_mut().last_mut().unwrap().push_closure(name.clone()) {
-            return result::already_exist(info);
-        }
+        parser
+            .stack_mut()
+            .last_mut()
+            .unwrap()
+            .push_closure(name.clone());
     }
 
     if let Some(token) = lexer.peek(require) {
@@ -40,7 +48,29 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, name: String, info: TokenIn
                     VariableExpression::new(name, info.clone()),
                     info,
                     require,
+                    false,
                 );
+            }
+            TokenType::Exclamation => {
+                lexer.next(true);
+                if let Some(token) = lexer.next(true) {
+                    let info = token.info();
+                    match token.ttype() {
+                        TokenType::LeftParenthesis => {
+                            return call::parse(
+                                lexer,
+                                parser,
+                                VariableExpression::new(name, info.clone()),
+                                info,
+                                require,
+                                true,
+                            );
+                        }
+                        _ => return result::unexpected(info),
+                    }
+                } else {
+                    return result::unexpected_eof();
+                }
             }
             _ => (),
         }

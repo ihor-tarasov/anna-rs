@@ -11,6 +11,7 @@ pub fn parse(
     from: Expression,
     info: TokenInfo,
     require: bool,
+    is_async: bool,
 ) -> ParserResult {
     let mut exprs = Vec::new();
 
@@ -18,7 +19,7 @@ pub fn parse(
         Some(token) => match token.ttype() {
             TokenType::RightParenthesis => {
                 lexer.next(true);
-                return Ok(CallExpression::new(from, exprs, info));
+                return Ok(CallExpression::new(from, exprs, is_async, info));
             }
             _ => (),
         },
@@ -50,7 +51,7 @@ pub fn parse(
                 return index::parse(
                     lexer,
                     parser,
-                    CallExpression::new(from, exprs, info.clone()),
+                    CallExpression::new(from, exprs, is_async, info.clone()),
                     info,
                     require,
                 );
@@ -59,5 +60,5 @@ pub fn parse(
         }
     }
 
-    Ok(CallExpression::new(from, exprs, info))
+    Ok(CallExpression::new(from, exprs, is_async, info))
 }

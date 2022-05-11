@@ -9,7 +9,6 @@ use crate::{
 pub struct Function {
     args: HashSet<String>,
     block: BlockExpression,
-    info: TokenInfo,
 }
 
 struct FrameGuard<'a, 'b> {
@@ -35,8 +34,8 @@ impl<'a, 'b> Drop for FrameGuard<'a, 'b> {
 }
 
 impl Function {
-    pub fn new(args: HashSet<String>, block: BlockExpression, info: TokenInfo) -> Self {
-        Self { args, block, info }
+    pub fn new(args: HashSet<String>, block: BlockExpression) -> Self {
+        Self { args, block }
     }
 
     pub fn call(
@@ -44,13 +43,14 @@ impl Function {
         eval_args: &mut EvalArgs,
         args: Vec<Value>,
         closure: HashMap<String, Value>,
+        info: TokenInfo,
     ) -> ExpressionResult {
         let mut guard = FrameGuard::new(eval_args, closure);
 
         if self.args.len() != args.len() {
             return Err(ExpressionError::new(
                 ExpressionErrorType::InvalidArgumentCount,
-                self.info.clone(),
+                info,
             ));
         }
 

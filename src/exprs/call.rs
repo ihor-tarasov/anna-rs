@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use crate::{
     lexer::TokenInfo,
-    types::{Object, Value},
+    types::{Object, Value}, State,
 };
 
 use super::{EvalArgs, Expression, ExpressionError, ExpressionErrorType, ExpressionResult};
@@ -10,7 +10,22 @@ use super::{EvalArgs, Expression, ExpressionError, ExpressionErrorType, Expressi
 pub struct CallExpression {
     from: Expression,
     params: Vec<Expression>,
+    is_async: bool,
     info: TokenInfo,
+}
+
+fn call_native(args: &EvalArgs, id: usize, params: Vec<Value>, is_async: bool) -> ExpressionResult {
+    if is_async {
+        let jh = std::thread::spawn({
+            let functions = Arc::clone(&args.functions);
+            let storage = Arc::clone(&args.storage);
+            move || {
+            functions.native(id)(storage, params)
+        }});
+        Ok(args.storage.lock().unwrap().push(Object::Thread(Some(jh))))
+    } else {
+        Ok(args.functions.native(id)(Arc::clone(&args.storage), params))
+    }
 }
 
 fn call_closure(
@@ -18,9 +33,29 @@ fn call_closure(
     id: usize,
     params: Vec<Value>,
     closure: HashMap<String, Value>,
+    is_async: bool,
+    info: TokenInfo,
 ) -> ExpressionResult {
     let functions = Arc::clone(&args.functions);
-    functions.function(id).call(args, params, closure)
+    if is_async {
+        let storage = Arc::clone(&args.storage);
+        let jh = std::thread::spawn(move || {
+            let mut state = State::new();
+            let functions2 = Arc::clone(&functions);
+            let mut eval_args = EvalArgs {
+                state: &mut state,
+                storage,
+                functions,
+            };
+            match functions2.function(id).call(&mut eval_args, params, closure, info) {
+                Ok(value) => value,
+                Err(_) => Value::Void,
+            }
+        });
+        Ok(args.storage.lock().unwrap().push(Object::Thread(Some(jh))))
+    } else {
+        functions.function(id).call(args, params, closure, info)
+    }
 }
 
 fn not_callable_object(info: TokenInfo) -> ExpressionResult {
@@ -30,15 +65,46 @@ fn not_callable_object(info: TokenInfo) -> ExpressionResult {
     ))
 }
 
+pub fn call(
+    from: Value,
+    params: Vec<Value>,
+    args: &mut EvalArgs,
+    is_async: bool,
+    info: TokenInfo,
+) -> ExpressionResult {
+    match from {
+        Value::NativeFunctionId(id) => {
+            call_native(args, id, params, is_async)
+        }
+        Value::ObjectId(id) => {
+            let closure = match args.storage.lock().unwrap().get_mut(id) {
+                Object::Closure((id, closure)) => (*id, closure.clone()),
+                Object::Thread(jh) => {
+                    match jh.take() {
+                        Some(jh) => return Ok(jh.join().unwrap()),
+                        None => return Ok(Value::Void),
+                    }
+                }
+                _ => return not_callable_object(info.clone()),
+            };
+
+            call_closure(args, closure.0, params, closure.1, is_async, info)
+        }
+        _ => not_callable_object(info),
+    }
+}
+
 impl CallExpression {
     pub fn new(
         from: Expression,
         params: Vec<Expression>,
+        is_async: bool,
         info: TokenInfo,
     ) -> Expression {
         Expression::Call(Box::new(Self {
             from,
             params,
+            is_async,
             info,
         }))
     }
@@ -52,17 +118,6 @@ impl CallExpression {
             params.push(super::eval(param, args)?);
         }
 
-        match from {
-            Value::NativeFunctionId(id) => Ok(args.functions.native(id)(Arc::clone(&args.storage), params)),
-            Value::ObjectId(id) => {
-                let closure = match args.storage.lock().unwrap().get(id) {
-                    Object::Closure((id, closure)) => (*id, closure.clone()),
-                    _ => return not_callable_object(self.info.clone()),
-                };
-
-                call_closure(args, closure.0, params, closure.1)
-            }
-            _ => not_callable_object(self.info.clone()),
-        }
+        call(from, params, args, self.is_async, self.info.clone())
     }
 }

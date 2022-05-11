@@ -8,6 +8,7 @@ pub enum ParserErrorType {
     Empty,
     ArgumentAlreadyExist,
     VariableAlreadyExist,
+    VariableNotExist,
 }
 
 pub struct ParserError {

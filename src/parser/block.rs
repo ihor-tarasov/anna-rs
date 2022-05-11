@@ -3,7 +3,7 @@ use crate::{
     lexer::{Lexer, TokenType},
 };
 
-use super::{result, Parser, ParserResult};
+use super::{result, Parser, ParserResult, ParserBlock};
 
 pub struct BlockGuard<'a, 'b> {
     parser: &'a mut Parser<'b>,
@@ -11,7 +11,7 @@ pub struct BlockGuard<'a, 'b> {
 
 impl<'a, 'b> BlockGuard<'a, 'b> {
     pub fn new(parser: &'a mut Parser<'b>) -> Self {
-        parser.stack_mut().last_mut().unwrap().push_block();
+        parser.stack_mut().last_mut().unwrap().push_block(ParserBlock::new());
         Self { parser }
     }
 

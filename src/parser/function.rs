@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
-use crate::{lexer::{Lexer, TokenType, TokenInfo}, exprs::{Expression, ClosureExpression}, Function};
+use crate::{lexer::{Lexer, TokenType}, exprs::{Expression, ClosureExpression}, Function};
 
-use super::{ParserResult, block, ParserError, ParserErrorType, result, Parser, ParserFrame};
+use super::{ParserResult, block, ParserError, ParserErrorType, result, Parser, ParserFrame, ParserBlock};
 
 struct FrameGuard<'a, 'b> {
     parser: &'a mut Parser<'b>,
@@ -11,7 +11,7 @@ struct FrameGuard<'a, 'b> {
 impl<'a, 'b> FrameGuard<'a, 'b> {
     fn new(parser: &'a mut Parser<'b>) -> Self {
         parser.stack_mut().push(ParserFrame::new());
-        parser.stack_mut().last_mut().unwrap().push_block();
+        parser.stack_mut().last_mut().unwrap().push_block(ParserBlock::new());
         Self { parser }
     }
 
@@ -26,7 +26,7 @@ impl<'a, 'b> Drop for FrameGuard<'a, 'b> {
     }
 }
 
-pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: bool) -> ParserResult {
+pub fn parse(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserResult {
     let mut args = HashSet::new();
 
     let mut guard = FrameGuard::new(parser);
@@ -37,9 +37,9 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: b
             match token.take_type() {
                 TokenType::Identifier(name) => {
                     if !args.insert(name.clone()) {
-                        if !guard.parser_mut().stack_mut().last_mut().unwrap().push_variable(name.clone()) {
-                            return Err(ParserError::new(ParserErrorType::ArgumentAlreadyExist, info));
-                        }
+                        return Err(ParserError::new(ParserErrorType::ArgumentAlreadyExist, info));
+                    }
+                    if !guard.parser_mut().stack_mut().last_mut().unwrap().push_variable(name.clone()) {
                         return Err(ParserError::new(ParserErrorType::ArgumentAlreadyExist, info));
                     }
                 },
@@ -69,7 +69,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, info: TokenInfo, require: b
         _ => panic!("Expected BlockExpression"),
     };
 
-    let function = Function::new(args, block, info);
+    let function = Function::new(args, block);
 
     let id = guard.parser_mut().functions_mut().push(function);
 

@@ -43,3 +43,4 @@ pub use literal::StringLiteralExpression;
 pub use for_expr::ForExpression;
 
 pub use eval::eval;
+pub use call::call;

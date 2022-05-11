@@ -31,6 +31,14 @@ pub fn get_by_index(object: &Object, index: usize, info: &TokenInfo) -> Expressi
                 index_out_of_bounds(info.clone())
             }
         }
+        Object::Range(range) => {
+            let pos = index as i64 + range.0;
+            if pos < range.1 {
+                Ok(Value::Integer(pos))
+            } else {
+                index_out_of_bounds(info.clone())
+            }
+        }
         _ => expect_indexable_object(info.clone()),
     }
 }

@@ -1,6 +1,12 @@
 use std::sync::Arc;
 
-use crate::{State, types::{Value, Object}, debug, native, Functions, parser::ParserStack, state::StorageRc};
+use crate::{
+    debug, native,
+    parser::ParserStack,
+    state::StorageRc,
+    types::{Value, Object},
+    Functions, State,
+};
 
 fn print_value(args: Vec<Value>, storage: StorageRc) {
     for arg in args {
@@ -10,12 +16,15 @@ fn print_value(args: Vec<Value>, storage: StorageRc) {
 
 pub fn register(state: &mut State, stack: &mut ParserStack, functions: &mut Functions) {
     stack.last_mut().unwrap().push_variable("print".to_string());
-    native(state, functions, "print".to_string(),  |storage, args| {
+    native(state, functions, "print".to_string(), |storage, args| {
         print_value(args, storage);
         Value::Void
     });
 
-    stack.last_mut().unwrap().push_variable("println".to_string());
+    stack
+        .last_mut()
+        .unwrap()
+        .push_variable("println".to_string());
     native(state, functions, "println".to_string(), |storage, args| {
         print_value(args, storage);
         println!();
@@ -41,26 +50,40 @@ pub fn register(state: &mut State, stack: &mut ParserStack, functions: &mut Func
         Value::Void
     });
 
-    stack.last_mut().unwrap().push_variable("join".to_string());
-    native(state, functions, "join".to_string(), |storage, args| {
-        let mut result = Value::Void;
-        for arg in args {
-            match arg {
+    stack.last_mut().unwrap().push_variable("size".to_string());
+    native(state, functions, "size".to_string(), |storage, args| {
+        match args.first() {
+            Some(arg) => match arg {
                 Value::ObjectId(id) => {
-                    match storage.lock().unwrap().get_mut(id) {
-                        Object::Thread(handle) => {
-                            if let Some(handle) = handle.take() {
-                                result = handle.join().unwrap();
-                            } else {
-                                result = Value::Void;
-                            }
-                        },
-                        _ => result = arg,
+                    match storage.lock().unwrap().get(*id) {
+                        Object::String(string) => Value::Integer(string.len() as i64),
+                        Object::Array(array) => Value::Integer(array.len() as i64),
+                        Object::Range(range) => Value::Integer(range.1 - range.0),
+                        _ => Value::Integer(1),
                     }
                 },
-                _ => result = arg,
-            }
+                _ => Value::Integer(1)
+            },
+            None => Value::Integer(0),
         }
-        result
+    });
+
+    stack.last_mut().unwrap().push_variable("range".to_string());
+    native(state, functions, "range".to_string(), |storage, args| {
+        match args.first() {
+            Some(start) => match start {
+                Value::Integer(start) => match args.get(1) {
+                    Some(end) => match end {
+                        Value::Integer(end) => {
+                            storage.lock().unwrap().push(Object::Range((*start, *end)))
+                        },
+                        _ => Value::Void,
+                    },
+                    None => Value::Void,
+                },
+                _ => Value::Void,
+            },
+            None => Value::Void,
+        }
     });
 }

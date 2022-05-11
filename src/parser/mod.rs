@@ -29,7 +29,7 @@ pub use result::ParserError;
 pub use result::ParserErrorType;
 pub use result::ParserResult;
 
-type ParserBlock = HashSet<String>;
+pub type ParserBlock = HashSet<String>;
 
 pub struct ParserFrame {
     variables: Vec<ParserBlock>,
@@ -44,8 +44,8 @@ impl ParserFrame {
         }
     }
 
-    pub fn push_block(&mut self) {
-        self.variables.push(HashSet::new());
+    pub fn push_block(&mut self, block: ParserBlock) {
+        self.variables.push(block);
     }
 
     pub fn pop_block(&mut self) {
@@ -67,6 +67,14 @@ impl ParserFrame {
 
     pub fn push_closure(&mut self, name: String) -> bool {
         self.closure.insert(name)
+    }
+
+    pub fn merge_last(&mut self) {
+        let last = self.variables.pop().unwrap();
+        let target = self.variables.last_mut().unwrap();
+        for name in last {
+            target.insert(name);
+        }
     }
 }
 

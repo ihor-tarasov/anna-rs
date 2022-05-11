@@ -8,7 +8,7 @@ use anna_rs::{
     debug,
     exprs::{self, EvalArgs},
     lexer::Lexer,
-    parser::{self, Parser, ParserErrorType, ParserFrame, ParserStack},
+    parser::{self, Parser, ParserErrorType, ParserFrame, ParserStack, ParserBlock},
     types::{Storage, Value},
     Functions, State,
 };
@@ -22,7 +22,7 @@ fn main() {
 
     let mut stack = ParserStack::new();
     stack.push(ParserFrame::new());
-    stack.last_mut().unwrap().push_block();
+    stack.last_mut().unwrap().push_block(ParserBlock::new());
 
     anna_rs::std::register(
         &mut state,
@@ -44,10 +44,12 @@ fn main() {
                 Some(line)
         }});
 
+        stack.last_mut().unwrap().push_block(ParserBlock::new());
         let mut parser = Parser::new(Arc::get_mut(&mut functions).unwrap(), &mut stack);
 
         match parser::parse(&mut lexer, &mut parser) {
             Ok(expression) => {
+                stack.last_mut().unwrap().merge_last();
                 let functions = Arc::clone(&functions);
                 let mut eval_args = EvalArgs {
                     state: &mut state,
@@ -66,6 +68,7 @@ fn main() {
                 }
             }
             Err(error) => {
+                stack.last_mut().unwrap().pop_block();
                 match error.etype() {
                     ParserErrorType::UnexpectedEndOfFile => {
                         print!("-| ");

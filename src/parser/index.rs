@@ -40,7 +40,29 @@ pub fn parse(
                     IndexExpression::new(from, index, info.clone()),
                     info,
                     require,
+                    false,
                 );
+            }
+            TokenType::Exclamation => {
+                lexer.next(true);
+                if let Some(token) = lexer.next(true) {
+                    let info = token.info();
+                    match token.ttype() {
+                        TokenType::LeftParenthesis => {
+                            return call::parse(
+                                lexer,
+                                parser,
+                                IndexExpression::new(from, index, info.clone()),
+                                info,
+                                require,
+                                true,
+                            );
+                        }
+                        _ => return result::unexpected(info),
+                    }
+                } else {
+                    return result::unexpected_eof();
+                }
             }
             _ => (),
         }

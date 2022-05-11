@@ -35,7 +35,7 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserRes
         TokenType::Break => caching::parse(lexer, parser, Value::Break, require),
         TokenType::Return => caching::parse(lexer, parser, Value::Return, require),
         TokenType::Continue => Ok(LiteralExpression::new(Value::Continue)),
-        TokenType::VerticalBar => function::parse(lexer, parser, info, require),
+        TokenType::VerticalBar => function::parse(lexer, parser, require),
         TokenType::String(value) => Ok(StringLiteralExpression::new(value)),
         TokenType::For => for_parser::parse(lexer, parser, info, require),
         TokenType::Unknown => result::unknown(info),
