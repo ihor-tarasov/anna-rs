@@ -86,4 +86,34 @@ pub fn register(state: &mut State, stack: &mut ParserStack, functions: &mut Func
             None => Value::Void,
         }
     });
+
+    stack.last_mut().unwrap().push_variable("push".to_string());
+    native(state, functions, "push".to_string(), |storage, args| {
+        match args.first() {
+            Some(target) => match *target {
+                Value::ObjectId(id) => match storage.lock().unwrap().get_mut(id) {
+                    Object::String(string) => match args.get(1) {
+                        Some(value) => match *value {
+                            Value::Integer(value) => {
+                                string.push(char::from_u32(value as u32).unwrap());
+                                Value::Void
+                            },
+                            _ => Value::Void,
+                        },
+                        None => Value::Void,
+                    },
+                    Object::Array(array) => match args.get(1) {
+                        Some(value) => {
+                            array.push(value.clone());
+                            Value::Void
+                        },
+                        None => Value::Void,
+                    },
+                    _ => Value::Void,
+                },
+                _ => Value::Void
+            },
+            None => Value::Void,
+        }
+    });
 }
