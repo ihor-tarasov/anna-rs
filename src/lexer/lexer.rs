@@ -25,6 +25,10 @@ fn lex(reader: &mut Reader, require: bool) -> Option<Token> {
         return Some(string::lex(reader, require));
     }
 
+    if c == '\0' {
+        return None;
+    }
+
     c = reader.next(require)?;
 
     if let Some(c2) = reader.peek(require) {

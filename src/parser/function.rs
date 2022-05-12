@@ -73,5 +73,16 @@ pub fn parse(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserRes
 
     let id = guard.parser_mut().functions_mut().push(function);
 
-    Ok(ClosureExpression::new(guard.parser_mut().stack_mut().last_mut().unwrap().closure.clone(), id))
+    let curr_frame = guard.parser_mut().stack_mut().pop().unwrap();
+    let last_frame = guard.parser_mut().stack_mut().last_mut().unwrap();
+
+    for variable in &curr_frame.closure {
+        if !last_frame.contains(variable) {
+            last_frame.push_closure(variable.clone());
+        }
+    }
+
+    guard.parser_mut().stack_mut().push(curr_frame);
+
+    Ok(ClosureExpression::new(guard.parser_mut().stack().last().unwrap().closure.clone(), id))
 }

@@ -1,3 +1,4 @@
+use core::panic;
 use std::{collections::HashMap, sync::Arc};
 
 use crate::{
@@ -77,18 +78,24 @@ pub fn call(
             call_native(args, id, params, is_async)
         }
         Value::ObjectId(id) => {
-            let closure = match args.storage.lock().unwrap().get_mut(id) {
-                Object::Closure((id, closure)) => (*id, closure.clone()),
+            let object = match args.storage.lock().unwrap().get_mut(id) {
+                Object::Closure((id, closure)) => Object::Closure((*id, closure.clone())),
                 Object::Thread(jh) => {
                     match jh.take() {
-                        Some(jh) => return Ok(jh.join().unwrap()),
+                        Some(jh) => Object::Thread(Some(jh)),
                         None => return Ok(Value::Void),
                     }
                 }
                 _ => return not_callable_object(info.clone()),
             };
 
-            call_closure(args, closure.0, params, closure.1, is_async, info)
+            match object {
+                Object::Closure(closure) => {
+                    call_closure(args, closure.0, params, closure.1, is_async, info)
+                },
+                Object::Thread(jh) => Ok(jh.unwrap().join().unwrap()),
+                _ => panic!("Not callable"),
+            }
         }
         _ => not_callable_object(info),
     }

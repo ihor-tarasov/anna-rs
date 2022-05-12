@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
 use crate::{
-    lexer::{Lexer, TokenInfo},
-    Functions,
+    lexer::{Lexer, TokenInfo, TokenType},
+    Functions, exprs::BlockExpression,
 };
 
 mod array;
@@ -28,6 +28,8 @@ mod for_parser;
 pub use result::ParserError;
 pub use result::ParserErrorType;
 pub use result::ParserResult;
+
+use self::block::BlockGuard;
 
 pub type ParserBlock = HashSet<String>;
 
@@ -112,6 +114,40 @@ impl<'a> Parser<'a> {
 
 pub fn parse_expression(lexer: &mut Lexer, parser: &mut Parser, require: bool) -> ParserResult {
     equality::parse(lexer, parser, require)
+}
+
+pub fn parse_block(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {
+    let mut guard = BlockGuard::new(parser);
+
+    let mut stats = Vec::new();
+
+    stats.push(parse_expression(
+        lexer,
+        guard.parser_mut(),
+        true,
+    )?);
+
+    loop {
+        if let Some(token) = lexer.peek(true) {
+            match token.ttype() {
+                TokenType::Semicolon => {
+                    lexer.next(true);
+                    ()
+                }
+                _ => (),
+            }
+        } else {
+            break;
+        }
+
+        match lexer.peek(true) {
+            Some(_) => (),
+            None => break,
+        }
+
+        stats.push(parse_expression(lexer, guard.parser_mut(), true)?);
+    }
+    Ok(BlockExpression::new(stats))
 }
 
 pub fn parse(lexer: &mut Lexer, parser: &mut Parser) -> ParserResult {

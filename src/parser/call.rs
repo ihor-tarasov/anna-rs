@@ -15,18 +15,18 @@ pub fn parse(
 ) -> ParserResult {
     let mut exprs = Vec::new();
 
-    match lexer.peek(true) {
-        Some(token) => match token.ttype() {
-            TokenType::RightParenthesis => {
-                lexer.next(true);
-                return Ok(CallExpression::new(from, exprs, is_async, info));
-            }
-            _ => (),
-        },
-        None => return result::unexpected_eof(),
-    }
-
     loop {
+        match lexer.peek(true) {
+            Some(token) => match token.ttype() {
+                TokenType::RightParenthesis => {
+                    lexer.next(true);
+                    break;
+                }
+                _ => (),
+            },
+            None => return result::unexpected_eof(),
+        }
+
         exprs.push(super::parse_expression(lexer, parser, true)?);
 
         match lexer.peek(true) {
@@ -55,6 +55,38 @@ pub fn parse(
                     info,
                     require,
                 );
+            }
+            TokenType::LeftParenthesis => {
+                lexer.next(true);
+                return parse(
+                    lexer,
+                    parser,
+                    CallExpression::new(from, exprs, is_async, info.clone()),
+                    info,
+                    require,
+                    false,
+                );
+            }
+            TokenType::Exclamation => {
+                lexer.next(true);
+                if let Some(token) = lexer.next(true) {
+                    let info = token.info();
+                    match token.ttype() {
+                        TokenType::LeftParenthesis => {
+                            return parse(
+                                lexer,
+                                parser,
+                                CallExpression::new(from, exprs, is_async, info.clone()),
+                                info,
+                                require,
+                                true,
+                            );
+                        }
+                        _ => return result::unexpected(info),
+                    }
+                } else {
+                    return result::unexpected_eof();
+                }
             }
             _ => (),
         }

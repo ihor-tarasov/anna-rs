@@ -1,0 +1,30 @@
+var work = |workers| {
+    println("[System] ", size(workers), " going to work.");
+    var one_work = |name| {
+        println("[", name, "] Start to work.");
+        for i in range(0, 100) {
+            sleep(100);
+            println("[", name, "] Done ", i, "% of work.");
+        }
+        10;
+    }
+    var handles = [];
+    for worker in workers {
+        push(handles, one_work!(worker));
+    }
+    return || {
+        var count = 0;
+        for handle in handles {
+            count = count + handle();
+        }
+        count;
+    }
+}
+
+var peoples = ["Ihor", "Bohdan", "Vlad"];
+
+var future = work(peoples);
+
+println("[User] Work started");
+
+println("[User] ", future(), " of work done");
