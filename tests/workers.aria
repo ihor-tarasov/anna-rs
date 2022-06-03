@@ -2,9 +2,9 @@ var work = |workers| {
     println("[System] ", size(workers), " going to work.");
     var one_work = |name| {
         println("[", name, "] Start to work.");
-        for i in range(1, 101) {
+        for i in range(1, 11) {
             sleep(100);
-            println("[", name, "] Done ", i, "% of work.");
+            println("[", name, "] Done ", i * 10, "% of work.");
         }
         100;
     }
