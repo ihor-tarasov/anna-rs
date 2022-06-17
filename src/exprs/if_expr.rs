@@ -43,6 +43,7 @@ impl IfExpression {
                 }
             }
             result = self.blocks.get(i).unwrap().eval(args)?;
+            return Ok(result);
         }
         if let Some(else_block) = &self.else_block {
             result = else_block.eval(args)?;
